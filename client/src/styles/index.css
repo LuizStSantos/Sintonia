@@ -1,0 +1,3322 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#14161A;
+  --panel:#1B1E24;
+  --panel-2:#21252C;
+  --border:#2A2E37;
+  --text:#F0F1F3;
+  --text-dim:#9096A1;
+  --text-dimmer:#5D636F;
+  --red:#E4372B;
+  --amber:#E8A93A;
+  --green:#4CAF6D;
+  --blue:#4C8BE8;
+  /* Faz os controles nativos que sobram (hora, barra de rolagem, etc.)
+     acompanharem o tema. */
+  color-scheme:dark;
+}
+
+/* Tema claro (fundo branco) — pra quem tem dificuldade de enxergar o tema
+   escuro padrão. Troca as variáveis de cor por um fundo branco com texto
+   escuro, e escurece um pouco os tons de destaque (vermelho/âmbar/verde/
+   azul) pra manterem bom contraste em cima de branco (do jeito que estavam
+   pensados pra contrastar com um fundo escuro). Como o app inteiro usa
+   essas variáveis (nada de cor "fixa" espalhada no CSS), trocar aqui já
+   cobre praticamente tudo — sidebar, botões, tabelas, ícones (que usam
+   currentColor), badges etc. Bordas um pouco mais grossas pra ficar fácil
+   de ver onde cada campo/botão termina. */
+:root[data-theme="claro"]{
+  --bg:#F4F5F7;
+  --panel:#FFFFFF;
+  --panel-2:#ECEEF1;
+  --border:#C7CBD1;
+  --text:#15171B;
+  --text-dim:#464B54;
+  --text-dimmer:#6B7078;
+  --red:#C22A1F;
+  --amber:#96650E;
+  --green:#1E7A45;
+  --blue:#1D5FC2;
+  color-scheme:light;
+}
+:root[data-theme="claro"] .search-input,
+:root[data-theme="claro"] select,
+:root[data-theme="claro"] input,
+:root[data-theme="claro"] textarea,
+:root[data-theme="claro"] .app-checkbox{
+  border-width:1.5px;
+}
+:root[data-theme="claro"] .btn-primary{
+  color:#FFFFFF;
+}
+
+*, *::before, *::after{ box-sizing:border-box; }
+html, body{ margin:0; padding:0; overflow-x:hidden; }
+/* Fonte padrão também no <body>: o popup "Sair sem salvar?" fica fora do .app-shell e, sem isso, saía com a fonte serifada do navegador. */
+body{ font-family:'IBM Plex Sans', system-ui, sans-serif; }
+
+/* Scrollbar customizado — combina com o tema escuro, em vez do padrão do
+   navegador. Funciona em qualquer elemento que role (tabela, sidebar, etc). */
+*{
+  scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+}
+*::-webkit-scrollbar{
+  width:10px;
+  height:10px;
+}
+*::-webkit-scrollbar-track{
+  background:transparent;
+}
+*::-webkit-scrollbar-thumb{
+  background-color:var(--border);
+  border-radius:20px;
+  border:2px solid var(--bg);
+  background-clip:padding-box;
+}
+*::-webkit-scrollbar-thumb:hover{
+  background-color:var(--text-dimmer);
+}
+*::-webkit-scrollbar-corner{
+  background:transparent;
+}
+
+.app-shell{
+  display:flex;
+  height:100vh;
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'IBM Plex Sans', system-ui, sans-serif;
+  font-size:14px;
+}
+.loading-shell{ align-items:center; justify-content:center; }
+.loading-text{ color:var(--text-dim); font-size:14px; }
+
+.mono{ font-family:'IBM Plex Mono', monospace; }
+.mono-col{ font-family:'IBM Plex Mono', monospace; }
+
+/* Sidebar */
+.sidebar{
+  width:236px;
+  flex-shrink:0;
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  padding:20px 16px;
+  height:100vh;
+  overflow-y:auto;
+}
+.brand{ display:flex; align-items:center; gap:10px; padding:0 4px 22px; border-bottom:1px solid var(--border); margin-bottom:18px; }
+.brand-icon{ flex-shrink:0; display:block; }
+.brand-mark{
+  width:36px; height:36px; border-radius:8px;
+  background:var(--red);
+  color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:600; font-size:14px;
+  flex-shrink:0;
+}
+.brand-title{ font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:14.5px; line-height:1.2; }
+.brand-sub{ font-size:11.5px; color:var(--text-dimmer); margin-top:2px; }
+
+.nav{ display:flex; flex-direction:column; gap:2px; flex:1; }
+.nav-item{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 10px;
+  border-radius:7px;
+  background:transparent;
+  border:none;
+  color:var(--text-dim);
+  font-size:13.5px;
+  font-family:inherit;
+  cursor:pointer;
+  text-align:left;
+  border-left:2px solid transparent;
+  transition:background .12s ease, color .12s ease;
+}
+.nav-item:hover{ background:var(--panel-2); color:var(--text); }
+.nav-item.active{ background:var(--panel-2); color:var(--text); border-left:2px solid var(--red); }
+
+.clock-block{
+  border-top:1px solid var(--border);
+  padding-top:16px;
+  margin-top:12px;
+}
+.on-air{ display:flex; align-items:center; gap:6px; font-size:11px; letter-spacing:0.06em; color:var(--red); font-weight:500; margin-bottom:6px; }
+.on-air-dot{ width:6px; height:6px; border-radius:50%; background:var(--red); animation:pulse 1.6s ease-in-out infinite; }
+@keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.35; } }
+.clock-time{ font-family:'IBM Plex Mono', monospace; font-size:22px; font-weight:500; letter-spacing:0.02em; }
+.clock-date{ font-size:12px; color:var(--text-dimmer); margin-top:2px; text-transform:capitalize; }
+
+.app-credit{
+  display:flex; flex-direction:column; gap:1px;
+  margin-top:10px; padding-top:10px;
+  border-top:1px solid var(--border);
+  font-size:9px; line-height:1.5; color:var(--text-dimmer); opacity:0.5;
+}
+.app-credit:hover{ opacity:0.85; }
+
+/* Main */
+.main{ flex:1; min-width:0; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+.topbar{
+  display:flex; align-items:center; gap:12px;
+  padding:22px 32px 4px;
+  flex-shrink:0;
+}
+.topbar h1{
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:600;
+  font-size:22px;
+  margin:0;
+}
+/* A área de conteúdo inteira rola verticalmente (cartões, busca e tabela
+   juntos) quando não cabe na tela. Antes era `overflow:hidden`, então uma
+   lista grande (ex: muitas matérias) simplesmente tinha o final cortado
+   fora da tela, sem nenhum jeito de rolar até lá — bug real, não só
+   estético. Precisa de um respiro no final pro balão de chat flutuante
+   (fixo no canto inferior direito, por cima de tudo) não cobrir a última
+   linha (e os botões de ver/editar/apagar dela) — mas esse respiro NÃO
+   pode ser o `padding-bottom` do `.content` (o container que rola):
+   numa pegadinha conhecida do flexbox, quando quem "estoura" o tamanho é
+   um FILHO flex (caso daqui — `.content > div`, com o `.table-wrap`
+   dentro dele), o padding do FINAL do container que rola não entra
+   direito na área rolável em alguns navegadores — rolar até "o fim de
+   verdade" não revela esse respiro, ele simplesmente não aparece, e o
+   balão volta a cobrir a última linha. A solução é colocar esse respiro
+   como `padding-bottom` do FILHO (`.content > div`) em vez do pai: aí ele
+   é só mais uma parte comum da altura do filho, e entra na área rolável
+   do jeito normal, sem exceção nenhuma. */
+.content{
+  padding:18px 32px 0;
+  flex:1;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+.content > div{
+  display:flex;
+  flex-direction:column;
+  flex:1;
+  /* `min-height:auto` (o padrão) em vez de `0` — isso é o que faz o
+     `padding-bottom` acima realmente funcionar. Com `min-height:0`, esse
+     item vira "espremível até sumir": quando o conteúdo (ex: uma lista
+     grande) precisa de mais altura do que sobra na tela, o flexbox dava a
+     ele só a altura que sobra (não a altura real do conteúdo) — o
+     conteúdo "vazava" visualmente pra fora dessa caixa menor, e o
+     `padding-bottom`, por pertencer a essa caixa pequena, acabava
+     renderizado ENTES do conteúdo que vazou, não depois — então rolar até
+     o fim de verdade não revelava respiro nenhum, e o balão de chat
+     flutuante cobria a última linha de novo. Com `min-height:auto`, essa
+     caixa nunca fica menor que o conteúdo pede: ela cresce de verdade, o
+     `.content` (que tem o scroll) passa a ver a altura certa, e o respiro
+     no final some corretamente só depois de tudo. */
+  min-height:auto;
+  padding-bottom:130px;
+}
+
+.mobile-only{ display:none; }
+.mobile-overlay{ display:none; }
+
+/* Stats */
+.report-controls{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  gap:14px;
+  margin-bottom:18px;
+  padding:14px 16px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+}
+.report-controls .field{ min-width:190px; }
+.report-period-row{ display:flex; gap:6px; }
+.report-period-row select:first-child{ flex:1; min-width:0; }
+.report-period-row select:last-child{ flex:0 0 92px; }
+.report-controls-actions{ margin-left:auto; }
+.report-controls-actions .btn-primary{ display:flex; align-items:center; gap:6px; white-space:nowrap; }
+.report-section-title{
+  font-size:14px;
+  font-weight:700;
+  color:var(--text);
+  margin:24px 0 10px;
+}
+.report-section-title:first-of-type{ margin-top:8px; }
+
+/* Cabeçalho especial: só aparece no PDF/impressão, nunca na tela */
+.print-only{ display:none; }
+.report-print-header{ margin-bottom:22px; }
+.report-print-brand{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); }
+.report-print-header h2{ margin:2px 0 8px; font-size:20px; }
+.report-print-header p{ margin:2px 0; font-size:13px; color:var(--text-dim); }
+.report-print-meta{ color:var(--text-dimmer) !important; }
+
+.espelho-aviso{ margin:0; flex:1; font-size:12.5px; color:var(--text-dimmer); }
+.espelho-linha{ cursor:pointer; }
+.espelho-linha:hover .espelho-titulo-cell{ color:var(--blue); }
+.espelho-data-cell{ white-space:nowrap; }
+.espelho-data-dia{ display:block; font-size:14px; font-weight:600; }
+.espelho-data-sem{ display:block; font-size:12px; color:var(--text-dimmer); }
+.espelho-prog-cell{ white-space:nowrap; }
+.espelho-prog-cell .badge{ font-size:13px; padding:3px 10px; }
+.espelho-prog-nome{ display:block; font-size:12px; color:var(--text-dimmer); margin-top:2px; }
+.espelho-titulo-cell.auto{ font-weight:400; color:var(--text-dim); font-size:13px; }
+
+/* O cabeçalho fixo (Programa/Data/Título + os 4 cartões de adicionar) com
+   só a lista de itens rolando deixava a tela apertada e difícil de usar.
+   Agora a página toda rola normal (como era antes), em qualquer tamanho
+   de tela — nada fica preso/fixo. */
+.content:has(.espelho-editor-shell){
+  display:block;
+  overflow-y:auto;
+}
+.content>.espelho-editor-shell{
+  display:block;
+  flex:none;
+  min-height:0;
+}
+.espelho-form-fixed{ flex:none; }
+.espelho-editor-scroll{
+  overflow:visible;
+}
+
+.espelho-form-grid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:14px;
+  margin-bottom:8px;
+}
+@media (max-width: 900px){
+  .espelho-form-grid{ grid-template-columns:1fr; }
+}
+.espelho-dia-semana{ margin-top:0; margin-bottom:18px; }
+
+.espelho-adders{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
+  gap:14px;
+  margin:18px 0;
+}
+@media (max-width: 640px){
+  .espelho-adders{ grid-template-columns:1fr; }
+}
+.espelho-adder-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.espelho-adder-card h4{ margin:0; font-size:13px; color:var(--text); }
+.espelho-adder-card textarea{ width:100%; box-sizing:border-box; }
+.espelho-materia-list{ display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto; }
+.espelho-materia-pick{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  text-align:left;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 10px;
+  cursor:pointer;
+  color:var(--text);
+  transition:border-color .12s ease;
+}
+.espelho-materia-pick:hover{ border-color:var(--blue); }
+.espelho-materia-pick-titulo{ flex:1; font-size:12.5px; }
+.espelho-materia-pick-meta{ font-size:11px; color:var(--text-dimmer); white-space:nowrap; }
+.espelho-materia-item{ display:flex !important; align-items:center; justify-content:space-between; gap:10px; }
+.espelho-custom-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.espelho-custom-row select{ flex:1; min-width:120px; }
+.espelho-custom-duracao{ width:155px !important; flex:none; }
+.espelho-custom-nome{ flex:1; min-width:140px; }
+.espelho-modelos-list{ display:flex; flex-wrap:wrap; gap:6px; }
+.espelho-modelo-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:2px;
+  background:rgba(76,139,232,0.12);
+  border:1px solid rgba(76,139,232,0.3);
+  border-radius:20px;
+  padding:2px 4px 2px 4px;
+}
+.espelho-modelo-chip button{
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-family:inherit;
+}
+.espelho-modelo-chip > button:first-child{
+  color:var(--blue);
+  font-size:11.5px;
+  font-weight:600;
+  padding:3px 6px;
+}
+.espelho-modelo-remove{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  color:var(--text-dimmer);
+  flex-shrink:0;
+}
+.espelho-modelo-remove:hover{ color:var(--red); background:rgba(228,55,43,0.12); }
+
+.espelho-modal{
+  width:700px;
+  max-width:100%;
+  max-height:85vh;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  animation:slideIn .15s ease-out;
+}
+.espelho-modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 20px 14px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.espelho-modal-header h3{ margin:0; font-family:'Space Grotesk', sans-serif; font-size:16px; font-weight:600; }
+.espelho-modal-filters{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.espelho-modal-filters input, .espelho-modal-filters select{
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:9px 11px;
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+  transition:border-color .12s ease, box-shadow .12s ease;
+}
+.espelho-modal-filters input::placeholder{ color:var(--text-dimmer); }
+.espelho-modal-filters input:hover, .espelho-modal-filters select:hover{ border-color:var(--text-dimmer); }
+.espelho-modal-filters input:focus, .espelho-modal-filters select:focus{
+  outline:none;
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(76,139,232,0.15);
+}
+.espelho-modal-filters input{ flex:1 1 200px; min-width:200px; }
+.espelho-modal-filters select{ flex:1 1 150px; min-width:150px; }
+.espelho-modal-list{
+  flex:1;
+  overflow-y:auto;
+  padding:6px 8px;
+  min-height:220px;
+}
+.espelho-modal-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.espelho-modal-row:hover{ background:var(--panel-2); }
+.app-checkbox{
+  appearance:none !important; -webkit-appearance:none !important;
+  width:20px !important; height:20px !important;
+  min-width:20px;
+  border-radius:7px;
+  border:1.5px solid var(--border);
+  background:var(--panel);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.25);
+  cursor:pointer;
+  flex-shrink:0;
+  display:grid;
+  place-items:center;
+  margin:0;
+  transition:background .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.app-checkbox:hover{ border-color:var(--red); }
+.app-checkbox:checked{ background:var(--red); border-color:var(--red); box-shadow:none; }
+.app-checkbox:checked::after{
+  content:"";
+  width:6px; height:10px;
+  border-right:2px solid #fff;
+  border-bottom:2px solid #fff;
+  transform:rotate(45deg) translate(-1px, -1px);
+}
+.espelho-modal-row-titulo{ flex:1; font-size:13px; color:var(--text); display:flex; flex-direction:column; gap:2px; min-width:0; }
+.espelho-modal-row-repetida{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:11px;
+  font-weight:500;
+  color:var(--amber);
+}
+.espelho-repeticao-lista{ margin:8px 0; padding-left:18px; font-size:13px; color:var(--text-dim); }
+.espelho-repeticao-lista li{ margin-bottom:4px; }
+.espelho-itemmanual-preview{
+  font-size:11.5px;
+  color:var(--text-dimmer);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:100%;
+}
+.espelho-itemmanual-novo{
+  padding:14px 20px;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  flex-shrink:0;
+}
+.espelho-itemmanual-novo h4{ margin:0; font-size:12.5px; color:var(--text-dim); font-weight:600; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.espelho-itemmanual-cancelar-edicao{ font-size:11.5px; padding:3px 9px; height:auto; font-weight:500; }
+.espelho-itemmanual-novo textarea{ width:100%; box-sizing:border-box; resize:vertical; }
+.espelho-itemmanual-salvar-check{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:12.5px;
+  color:var(--text-dim);
+  cursor:pointer;
+}
+.espelho-itemmanual-salvar-check input{ width:auto; accent-color:var(--red); cursor:pointer; }
+.espelho-modal-row-duracao{ font-size:12px; color:var(--text-dimmer); font-family:'IBM Plex Mono', monospace; white-space:nowrap; }
+.espelho-modal-footer{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 20px;
+  border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.espelho-modal-count{ flex:1; font-size:12.5px; color:var(--text-dimmer); }
+
+@media (max-width: 640px){
+  .confirm-overlay{ padding:12px; }
+  .espelho-modal{ width:100%; max-height:92vh; }
+  .espelho-modal-header{ padding:14px 16px 12px; }
+  .espelho-modal-header h3{ font-size:15px; }
+  .espelho-modal-filters{ padding:12px 16px; }
+  .espelho-modal-filters input, .espelho-modal-filters select{ flex:1 1 100%; min-width:0; }
+  .espelho-modal-list{ padding:4px 8px; }
+  .espelho-modal-row{ flex-wrap:wrap; row-gap:4px; padding:10px; }
+  .espelho-modal-row-titulo{ flex:1 1 60%; }
+  .espelho-itemmanual-novo{ padding:12px 16px; }
+  .espelho-itemmanual-novo .espelho-custom-row{ flex-direction:column; }
+  .espelho-itemmanual-novo .espelho-custom-row select,
+  .espelho-itemmanual-novo .espelho-custom-row input,
+  .espelho-custom-nome,
+  .espelho-custom-duracao{ width:100% !important; box-sizing:border-box; }
+  .espelho-modal-footer{ padding:12px 16px; flex-wrap:wrap; }
+  .espelho-modal-count{ flex:0 0 100%; order:-1; margin-bottom:2px; }
+  .espelho-modal-footer .btn-ghost, .espelho-modal-footer .btn-primary{ flex:1; }
+}
+.espelho-custom-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+.espelho-custom-actions .btn-ghost{ flex:1; white-space:nowrap; }
+
+.espelho-itens-title{ font-size:14px; margin:6px 0 10px; color:var(--text); }
+.espelho-itens-list{ display:flex; flex-direction:column; gap:8px; }
+.espelho-item{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:11px 13px;
+  transition:opacity .15s, border-color .15s, box-shadow .15s;
+}
+.espelho-item.dragging{ opacity:.45; }
+.espelho-item.drag-over{ border-color:var(--blue); box-shadow:0 -2px 0 var(--blue) inset; }
+.espelho-item-handle{
+  display:flex; align-items:center; justify-content:center;
+  flex:none; width:20px; color:var(--text-dimmer);
+  cursor:grab; touch-action:none;
+}
+.espelho-item-handle:active{ cursor:grabbing; }
+.espelho-item-head{ display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+.espelho-item-retranca{ flex:1; min-width:0; font-weight:600; }
+.espelho-item-duracao{ width:110px !important; flex:none; }
+.espelho-item-actions{ display:flex; gap:4px; flex-shrink:0; }
+.espelho-item-texto{ width:100%; box-sizing:border-box; resize:none; overflow:hidden; }
+.espelho-item-materia .espelho-item-retranca{ color:var(--blue); }
+.espelho-item-entrevistado .espelho-item-retranca{ color:var(--green); }
+.espelho-item-passagem{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  justify-content:center;
+  text-align:center;
+  font-weight:700;
+  background:var(--panel-2);
+  border:1px dashed var(--border);
+}
+.espelho-passagem-duracao{ width:100px !important; text-align:center; flex:none; }
+
+@media (max-width: 480px){
+  .espelho-item-passagem{ flex-wrap:wrap; }
+  .espelho-item-passagem span{ flex:1 1 100%; order:-1; margin-bottom:4px; }
+}
+
+.espelho-item-retranca, .espelho-item-duracao, .espelho-item-texto, .espelho-passagem-duracao,
+.espelho-custom-duracao, .espelho-custom-nome, .espelho-custom-row select, .espelho-adder-card textarea, .espelho-itemmanual-novo textarea{
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:9px 11px;
+  color:var(--text);
+  font-family:inherit;
+  font-size:13.5px;
+  transition:border-color .12s ease, box-shadow .12s ease;
+}
+.espelho-item-retranca:hover, .espelho-item-duracao:hover, .espelho-item-texto:hover, .espelho-passagem-duracao:hover,
+.espelho-custom-duracao:hover, .espelho-custom-nome:hover, .espelho-custom-row select:hover, .espelho-adder-card textarea:hover, .espelho-itemmanual-novo textarea:hover{ border-color:var(--text-dimmer); }
+.espelho-item-retranca:focus, .espelho-item-duracao:focus, .espelho-item-texto:focus, .espelho-passagem-duracao:focus,
+.espelho-custom-duracao:focus, .espelho-custom-nome:focus, .espelho-custom-row select:focus, .espelho-adder-card textarea:focus, .espelho-itemmanual-novo textarea:focus{
+  outline:none;
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(76,139,232,0.15);
+}
+.espelho-item-retranca:disabled, .espelho-item-duracao:disabled, .espelho-item-texto:disabled{
+  opacity:0.7;
+  cursor:not-allowed;
+}
+
+.espelho-print{ color:#111; }
+.espelho-print-table{ border-collapse:collapse; width:100%; table-layout:fixed; }
+.espelho-print-table th, .espelho-print-table td{ border:1px solid #999; padding:7px 9px; text-align:left; vertical-align:top; font-size:12.5px; }
+.espelho-print-table thead tr:nth-child(2) th:first-child{ font-size:11px; }
+.espelho-print-title-cell{ text-align:center !important; font-size:14px; }
+.espelho-print-passagem-label{ text-align:center !important; font-weight:700; }
+.espelho-print-retranca{ font-weight:600; white-space:pre-wrap; overflow-wrap:normal; word-break:normal; }
+.espelho-print-texto{ white-space:pre-wrap; }
+.espelho-print-total-cell{ text-align:right !important; font-weight:700; font-size:13px; background:#f2f2f2; }
+
+.espelho-passagem-auto-badge{
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.02em;
+  color:#2563eb; background:#dbeafe; border-radius:4px; padding:2px 6px; flex:none;
+}
+
+/* Impressão / geração de PDF: esconde o app e mostra só o relatório, em
+   preto no branco, formatado pra papel */
+@media print{
+  body{ background:#fff !important; }
+  .sidebar, .topbar, .report-controls, .drawer-actions, button, .mobile-nav-toggle{ display:none !important; }
+  .print-only{ display:block !important; }
+  .espelho-no-print{ display:none !important; }
+  .app-shell{ display:block !important; height:auto !important; overflow:visible !important; }
+  .main{ display:block !important; height:auto !important; overflow:visible !important; }
+  .content{ display:block !important; overflow:visible !important; height:auto !important; padding:0 !important; }
+  .content > div{ display:block !important; overflow:visible !important; height:auto !important; padding-bottom:0 !important; }
+  *{ color:#111 !important; background:transparent !important; box-shadow:none !important; }
+  body, .app-shell, .main, .content{ background:#fff !important; }
+  .stat-grid{ grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:16px; }
+  .stat-card{ border:1px solid #ccc !important; break-inside:avoid; }
+  .table-wrap{ display:block !important; overflow:visible !important; max-height:none !important; border:none !important; flex:none !important; }
+  /* `table-layout:fixed` — IMPORTANTE: já tentamos `auto` aqui (deixar o
+     navegador calcular a largura de cada coluna pelo conteúdo), pra
+     cabeçalhos longos (ex: relatório de OPEC: Dias da semana/Inserções/
+     Vencimento) não quebrarem no meio da palavra. Só que em `auto` a
+     largura declarada (`width:100%`) é tratada como um MÍNIMO, não um
+     máximo — se o conteúdo "pedir" mais espaço que isso (ex: nome de VT
+     grande, vários dias da semana escritos por extenso), o Chrome deixa a
+     tabela passar da largura da página e CORTA as últimas colunas fora da
+     folha (bug visto no navegador de verdade, mesmo sem aparecer no PDF
+     gerado por aqui, que usa outro motor de impressão). `fixed` garante
+     que a tabela NUNCA estoura 100% da página, custe o que custar — e o
+     cuidado pra não voltar a dividir tudo em partes iguais (o bug
+     original, cabeçalho cortando no meio) é cada tabela de Relatórios
+     definir sua própria largura de coluna com `<colgroup>` (ver
+     `RelatoriosTab.jsx`), proporcional ao conteúdo em vez de igual pra
+     todo mundo. A tabela do Espelho (`.espelho-print-table`, ver abaixo)
+     já fazia isso do jeito certo desde sempre — tem sua própria regra,
+     não depende desta aqui. */
+  table{ border-collapse:collapse; width:100% !important; table-layout:fixed !important; min-width:0 !important; }
+  thead{ display:table-header-group; background:#f2f2f2 !important; }
+  thead th{ position:static !important; }
+  th, td{
+    border:1px solid #ccc !important;
+    padding:6px 8px;
+    overflow-wrap:break-word;
+  }
+  tr{ break-inside:avoid; }
+  .report-section-title{ break-after:avoid; margin-top:18px; }
+
+  /* As tabelas de Relatórios (dentro de `.table-wrap` — a do Espelho não
+     entra aqui, ela nem fica dentro de `.table-wrap`) usam o tamanho de
+     fonte normal da tela (13.5px no corpo), que é grande demais pra uma
+     tabela de 8 colunas (caso do OPEC) numa folha A4 — sobra pouco espaço
+     por coluna e aumenta a chance de palavra/data quebrar no meio mesmo
+     com a largura de cada coluna ajustada (`<colgroup>` em
+     `RelatoriosTab.jsx`). Reduzido só na impressão. */
+  .table-wrap table{ font-size:10.5px; }
+  .table-wrap thead th{ font-size:10px; padding:6px 6px; }
+  .table-wrap tbody td{ padding:5px 6px; }
+
+  /* O cabeçalho do espelho (título do programa + data) fica dentro do
+     <thead> da tabela só por conveniência de layout/estilo — mas o
+     <thead> normal repete em toda página impressa (regra `thead` acima),
+     o que fazia um roteiro grande (várias páginas) reimprimir "ESPELHO DO
+     PROGRAMA" e a data no topo de cada página. Como grupo de linha comum
+     (table-row-group), ele aparece só uma vez, no topo da primeira página. */
+  .espelho-print-table thead{ display:table-row-group; }
+
+  /* Mesmo problema do <thead> acima, só que no <tfoot>: por padrão ele
+     também repete em toda página impressa (table-footer-group), então o
+     "TEMPO TOTAL" aparecia no fim de TODA página de um roteiro grande, não
+     só na última. Como grupo de linha comum, passa a aparecer só uma vez —
+     e como é a última linha da tabela, continua saindo no final de verdade
+     (a última página), que é onde faz sentido. */
+  .espelho-print-table tfoot{ display:table-row-group; }
+
+  /* Bug conhecido de impressão (Chrome e outros): uma tabela com
+     `border-collapse: collapse` que precisa quebrar entre páginas pode
+     desenhar uma linha preta grossa bem no corte da página — as bordas
+     coladas de duas células vizinhas (uma de cada lado do corte) se somam
+     ali. Troca pra `border-collapse: separate` (com `border-spacing: 0`,
+     pra não sobrar espaço nenhum entre células) só na hora de imprimir —
+     a grade fica com uma linha dupla finíssima em vez de uma só (quase
+     imperceptível), mas sem esse artefato no corte da página. */
+  .espelho-print-table{ border-collapse:separate !important; border-spacing:0; }
+}
+
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0,1fr));
+  gap:12px;
+  margin-bottom:20px;
+}
+.stat-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 16px;
+}
+.stat-card-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.stat-label{ font-size:12.5px; color:var(--text-dim); }
+.stat-value{ font-family:'Space Grotesk', sans-serif; font-size:22px; font-weight:600; }
+
+/* Toolbar */
+.toolbar{ display:flex; gap:10px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+.search-wrap{ position:relative; flex:1 1 180px; min-width:0; }
+.search-icon{ position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--text-dimmer); }
+.search-input{
+  width:100%;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:9px 12px 9px 32px;
+  color:var(--text);
+  font-family:inherit;
+  font-size:13.5px;
+}
+.search-input:focus{ outline:none; border-color:var(--text-dimmer); }
+.select-filter{
+  flex:0 0 auto;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:9px 10px;
+  color:var(--text);
+  font-family:inherit;
+  font-size:13.5px;
+}
+.btn-primary{
+  display:flex; align-items:center; gap:6px;
+  flex-shrink:0;
+  background:var(--red);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:9px 15px;
+  font-family:inherit;
+  font-size:13.5px;
+  font-weight:500;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.btn-primary:hover{ background:#c62f24; }
+.btn-ghost{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:8px;
+  padding:9px 15px;
+  font-family:inherit;
+  font-size:13.5px;
+  cursor:pointer;
+}
+.btn-ghost:hover{ background:var(--panel-2); }
+.btn-ghost.danger{ color:var(--red); border-color:var(--red); }
+.btn-ghost.danger:hover{ background:rgba(214,61,46,0.1); }
+
+/* Table */
+.table-wrap{
+  background:
+    linear-gradient(to right, var(--panel) 30%, rgba(255,255,255,0)) 0 0,
+    linear-gradient(to left, var(--panel) 30%, rgba(255,255,255,0)) 100% 0,
+    linear-gradient(to right, rgba(0,0,0,0.35), rgba(0,0,0,0)) 0 0,
+    linear-gradient(to left, rgba(0,0,0,0.35), rgba(0,0,0,0)) 100% 0;
+  background-repeat:no-repeat;
+  background-color:var(--panel);
+  background-size:24px 100%, 24px 100%, 10px 100%, 10px 100%;
+  background-attachment:local, local, scroll, scroll;
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow-x:auto;
+  /* Pegadinha do CSS: declarar só `overflow-x` faz o navegador tratar o
+     `overflow-y` (que a gente nunca pediu) como "auto" também, nos
+     bastidores. Isso muda o "tamanho mínimo automático" desse elemento
+     dentro de um flex container (como o `<div>` de cada aba, que é
+     `display:flex; flex-direction:column`) de "do tamanho do conteúdo"
+     pra zero — e aí, numa tela baixa (notebook pequeno) com várias tabelas
+     empilhadas (caso do Relatórios: cartões + 2 tabelas), o flexbox
+     ESPREME cada tabela quase até sumir, em vez de deixar elas com sua
+     altura normal e a página (que tem scroll de verdade, `.content`)
+     rolar. `flex-shrink:0` trava a tabela no tamanho natural dela — aí
+     quando não cabe tudo na tela, quem rola é a página inteira, não uma
+     tabela virando uma tarjinha vazia de 10px. */
+  flex-shrink:0;
+}
+table{ width:100%; border-collapse:collapse; min-width:640px; }
+thead th{
+  text-align:left;
+  font-size:11.5px;
+  color:var(--text-dimmer);
+  font-weight:500;
+  letter-spacing:0.02em;
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
+}
+tbody td{
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  font-size:13.5px;
+  color:var(--text);
+  vertical-align:middle;
+}
+tbody tr:last-child td{ border-bottom:none; }
+tbody tr:hover{ background:var(--panel-2); }
+.title-cell{ font-weight:500; }
+.actions-col{ width:70px; text-align:right; white-space:nowrap; }
+.overdue{ color:var(--red); font-weight:500; }
+.today-row{ background:rgba(228,55,43,0.08); }
+.row-inativo{ opacity:0.55; }
+.row-inativo .fixa-badge{ background:rgba(255,255,255,0.08); color:var(--text-dimmer); }
+.update-notice{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:200;
+  background:var(--blue);
+  color:#fff;
+  text-align:center;
+  font-size:13px;
+  font-weight:600;
+  padding:8px 12px;
+  animation:slideIn .2s ease-out;
+}
+.notif-banner{
+  /* Fica dentro do fluxo normal da página (logo abaixo do cabeçalho),
+     nunca "flutuando" por cima de tudo — antes era position:fixed cobrindo
+     a tela inteira do topo, o que no celular tampava até o botão do menu
+     (☰), deixando quem não tivesse dispensado o aviso sem conseguir abrir
+     a navegação. */
+  flex-shrink:0;
+  margin:0 32px 4px;
+  border-radius:10px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:13px;
+  padding:10px 16px;
+  animation:slideIn .2s ease-out;
+}
+.notif-banner svg{ flex-shrink:0; color:var(--blue); }
+.notif-banner span{ flex:1; color:var(--text-dim); }
+.notif-banner .btn-primary{ white-space:nowrap; padding:7px 14px; font-size:12.5px; }
+.today-row:hover{ background:rgba(228,55,43,0.14); }
+.today-row td{ border-bottom-color:rgba(228,55,43,0.25); }
+.today-text{ color:var(--red); font-weight:600; }
+.extras-badge{ color:var(--red); font-weight:700; font-size:12.5px; }
+.fixa-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  margin-left:8px;
+  padding:2px 7px;
+  border-radius:20px;
+  background:rgba(76,139,232,0.12);
+  color:var(--blue);
+  font-size:10.5px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:0.03em;
+  vertical-align:middle;
+}
+.danger-btn{ background:var(--red) !important; }
+.cancel-panel{ width:420px; }
+.cancel-search-wrap{ margin-bottom:14px; }
+.cancel-search-wrap .search-input{ padding-top:10px; padding-bottom:10px; }
+.cancel-picker-list{
+  max-height:300px;
+  overflow-y:auto;
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin:0 0 4px;
+  background:var(--panel-2);
+}
+.cancel-picker-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  width:100%;
+  text-align:left;
+  padding:13px 14px;
+  background:none;
+  border:none;
+  color:var(--text);
+  font-size:13.5px;
+  cursor:pointer;
+  transition:background .1s ease;
+}
+.cancel-picker-item:hover{ background:var(--panel); }
+.cancel-picker-item:first-child{ border-radius:10px 10px 0 0; }
+.cancel-picker-item:last-child{ border-radius:0 0 10px 10px; }
+.cancel-picker-item + .cancel-picker-item{ border-top:1px solid var(--border); }
+.cancel-picker-nome{ font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cancel-picker-meta{
+  flex-shrink:0;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-dim);
+  white-space:nowrap;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:4px 10px;
+}
+.cancel-picker-empty{
+  text-align:center;
+  color:var(--text-dimmer);
+  font-size:13px;
+  padding:28px 16px;
+}
+.empty-row{ text-align:center; color:var(--text-dimmer); padding:32px 16px; }
+
+.backup-section{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:18px 20px;
+  margin-bottom:16px;
+}
+.backup-section h3{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:0 0 8px;
+  font-size:15px;
+  font-weight:600;
+  color:var(--text);
+}
+.backup-section p{ margin:0 0 12px; font-size:13px; color:var(--text-dim); line-height:1.55; }
+.backup-section p:last-of-type{ margin-bottom:14px; }
+.backup-section .btn-primary{ display:inline-flex; align-items:center; gap:6px; }
+.backup-section-disabled{ opacity:0.75; }
+.backup-section-disabled h3{ color:var(--text-dim); }
+.backup-file-input{
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:9px 11px;
+  color:var(--text-dim);
+  font-family:inherit;
+  font-size:13px;
+  margin-bottom:10px;
+}
+.backup-restore-preview{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:10px 12px;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  font-size:13px;
+  color:var(--text-dim);
+}
+.backup-config-row{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+.backup-config-row .field{ flex:1; min-width:160px; margin-bottom:0; }
+.backup-status-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+}
+.backup-status-pill.ok{ background:rgba(76,175,109,0.12); color:var(--green); }
+.backup-status-pill.off{ background:rgba(144,150,161,0.12); color:var(--text-dimmer); }
+
+.todo-composer{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 16px;
+  margin-bottom:16px;
+}
+.todo-composer-titulo{
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 13px;
+  font-size:14px;
+  font-weight:500;
+  color:var(--text);
+}
+.todo-composer-descricao{
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:9px 13px;
+  font-size:13px;
+  color:var(--text-dim);
+  resize:vertical;
+  min-height:38px;
+  font-family:inherit;
+  line-height:1.5;
+}
+.todo-composer-atribuir{
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 12px;
+  font-size:13px;
+  color:var(--text);
+  align-self:flex-start;
+}
+.todo-composer-row{
+  display:flex;
+  align-items:flex-end;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.todo-composer-row .field{ margin-bottom:0; }
+.todo-composer-submit{ display:inline-flex; align-items:center; gap:6px; white-space:nowrap; margin-left:auto; }
+.todo-toolbar{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+
+@media (max-width: 640px){
+  .todo-composer-row{ flex-direction:column; align-items:stretch; }
+  .priority-picker{ justify-content:space-between; }
+  .todo-composer-row .field{ width:100%; }
+  .todo-composer-submit{ margin-left:0; width:100%; justify-content:center; }
+}
+
+.priority-picker{ display:flex; gap:6px; background:var(--panel-2); border:1px solid var(--border); border-radius:9px; padding:3px; }
+.priority-chip{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border:none;
+  background:transparent;
+  color:var(--text-dim);
+  font-size:12.5px;
+  font-weight:500;
+  padding:7px 12px;
+  border-radius:7px;
+  cursor:pointer;
+  transition:background .12s ease, color .12s ease;
+}
+.priority-chip-dot{ width:7px; height:7px; border-radius:50%; background:var(--text-dimmer); flex-shrink:0; }
+.priority-chip-baixa .priority-chip-dot{ background:var(--text-dimmer); }
+.priority-chip-normal .priority-chip-dot{ background:var(--blue); }
+.priority-chip-alta .priority-chip-dot{ background:var(--red); }
+.priority-chip:hover{ color:var(--text); }
+.priority-chip.active{ background:var(--panel); color:var(--text); box-shadow:0 0 0 1px var(--border) inset; }
+.priority-chip-baixa.active{ color:var(--text-dimmer); }
+.priority-chip-normal.active{ color:var(--blue); }
+.priority-chip-alta.active{ color:var(--red); }
+
+.todo-list{ display:flex; flex-direction:column; gap:7px; }
+.todo-item{
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  gap:13px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:13px 15px 13px 18px;
+  overflow:hidden;
+  transition:border-color .12s ease, opacity .15s ease;
+}
+.todo-item::before{
+  content:"";
+  position:absolute;
+  left:0; top:0; bottom:0;
+  width:3px;
+  background:var(--text-dimmer);
+}
+.todo-item.todo-priority-alta::before{ background:var(--red); }
+.todo-item.todo-priority-normal::before{ background:var(--blue); }
+.todo-item.todo-priority-baixa::before{ background:var(--text-dimmer); }
+.todo-item:hover{ border-color:#3A3F4A; }
+.todo-item.todo-done{ opacity:0.58; }
+.todo-item.todo-done::before{ background:var(--green); }
+
+.todo-check{ margin-top:1px; }
+
+.todo-item-body{ flex:1; min-width:0; }
+.todo-item-texto{ font-size:13.5px; color:var(--text); line-height:1.5; word-break:break-word; }
+.todo-item-descricao{ font-size:12.5px; color:var(--text-dim); line-height:1.5; margin:4px 0 0; word-break:break-word; white-space:pre-wrap; }
+.todo-done .todo-item-texto{ color:var(--text-dimmer); text-decoration:line-through; }
+.todo-done .todo-item-descricao{ color:var(--text-dimmer); }
+.todo-item-meta{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:6px; }
+.todo-item-user{
+  font-size:11px;
+  font-weight:600;
+  color:var(--blue);
+  background:rgba(76,139,232,0.12);
+  padding:2px 8px;
+  border-radius:20px;
+}
+.todo-item-atribuida{
+  font-size:11px;
+  font-weight:500;
+  color:var(--amber);
+  background:rgba(232,169,58,0.12);
+  padding:2px 8px;
+  border-radius:20px;
+}
+.todo-item-prazo{ display:inline-flex; align-items:center; gap:4px; font-size:11.5px; color:var(--text-dimmer); }
+.todo-item-prazo.todo-overdue{ color:var(--red); font-weight:600; }
+.todo-priority-tag{ font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:20px; }
+.todo-priority-tag-baixa{ background:rgba(144,150,161,0.12); color:var(--text-dimmer); }
+.todo-priority-tag-normal{ background:rgba(76,139,232,0.12); color:var(--blue); }
+.todo-priority-tag-alta{ background:rgba(228,55,43,0.12); color:var(--red); }
+.todo-delete{ opacity:0.5; transition:opacity .12s ease; }
+.todo-item:hover .todo-delete{ opacity:1; }
+
+.icon-btn{
+  background:transparent;
+  border:none;
+  color:var(--text-dim);
+  cursor:pointer;
+  padding:6px;
+  border-radius:6px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.icon-btn:hover{ background:var(--panel-2); color:var(--text); }
+.icon-btn.danger:hover{ color:var(--red); }
+
+/* Links — grade de cartões (arte no Canva, sites, referências etc.), cada
+   um clicável e abrindo em nova aba. */
+.links-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+  gap:12px;
+}
+.link-card{
+  position:relative;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  transition:border-color .15s ease, background .15s ease;
+}
+.link-card:hover{ border-color:var(--blue); background:var(--panel-2); }
+.link-card-open{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:14px 16px;
+  color:inherit;
+  text-decoration:none;
+}
+.link-card-icon{
+  flex:none;
+  width:34px; height:34px;
+  border-radius:8px;
+  background:rgba(76,139,232,0.15);
+  color:var(--blue);
+  display:flex; align-items:center; justify-content:center;
+}
+.link-card-body{ min-width:0; flex:1; padding-right:20px; }
+.link-card-nome{ font-weight:600; font-size:14px; word-break:break-word; }
+.link-card-desc{ font-size:12.5px; color:var(--text-dim); margin-top:3px; word-break:break-word; }
+.link-card-external{ position:absolute; top:14px; right:14px; color:var(--text-dimmer); flex:none; }
+.link-card-actions{
+  display:flex; gap:2px;
+  padding:0 10px 10px;
+  justify-content:flex-end;
+}
+
+/* Cartão do tipo "Texto" (hashtags, legendas prontas etc.) — mesmo layout
+   do cartão de link, mas é um botão que copia o texto pro clipboard em vez
+   de um link que abre em nova aba. Ícone em âmbar pra diferenciar de
+   relance dos cartões de link (azul). */
+.link-card-icon.tipo-texto{ background:rgba(232,169,58,0.18); color:var(--amber); }
+.link-card-open.link-card-copy{
+  width:100%;
+  border:none;
+  background:none;
+  cursor:pointer;
+  font:inherit;
+  text-align:left;
+}
+.link-card-texto-preview{
+  font-size:12.5px;
+  color:var(--text-dim);
+  margin-top:5px;
+  white-space:pre-wrap;
+  word-break:break-word;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.link-card-copied{ color:var(--green) !important; }
+
+/* Drawer */
+.drawer-overlay{
+  position:fixed; inset:0;
+  background:rgba(10,11,13,0.6);
+  display:flex; justify-content:flex-end;
+  z-index:50;
+}
+.drawer-panel{
+  width:380px;
+  max-width:90vw;
+  background:var(--panel);
+  border-left:1px solid var(--border);
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  animation:slideIn .18s ease-out;
+}
+@keyframes slideIn{ from{ transform:translateX(24px); opacity:0; } to{ transform:translateX(0); opacity:1; } }
+.drawer-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 20px;
+  border-bottom:1px solid var(--border);
+}
+.drawer-header h3{ font-family:'Space Grotesk', sans-serif; font-size:16px; font-weight:600; margin:0; }
+.drawer-body{ padding:18px 20px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field-label{ font-size:12.5px; color:var(--text-dim); }
+.field input, .field select, .field textarea{
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:9px 11px;
+  color:var(--text);
+  font-family:inherit;
+  font-size:13.5px;
+  transition:border-color .12s ease, box-shadow .12s ease;
+}
+.field textarea{ resize:vertical; min-height:70px; line-height:1.4; }
+.field input:hover, .field select:hover, .field textarea:hover{ border-color:var(--text-dimmer); }
+.field input:focus, .field select:focus, .field textarea:focus{
+  outline:none;
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(76,139,232,0.15);
+}
+.field input.input-invalid, .field select.input-invalid{
+  border-color:var(--red);
+  box-shadow:0 0 0 3px rgba(228,55,43,0.1);
+}
+.field-error-msg{
+  font-size:11.5px;
+  color:var(--red);
+  margin-top:-2px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.duplicate-warning{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin:2px 0 4px;
+  padding:10px 12px;
+  background:rgba(228,55,43,0.1);
+  border:1px solid rgba(228,55,43,0.3);
+  border-radius:8px;
+  color:var(--red);
+  font-size:12.5px;
+  line-height:1.5;
+}
+.duplicate-warning svg{ flex-shrink:0; margin-top:1px; }
+.duplicate-warning strong{ color:var(--red); }
+.field-section-title{
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+  color:var(--text-dimmer);
+  margin:6px 0 -6px;
+  padding-top:12px;
+  border-top:1px solid var(--border);
+}
+.field-section-title:first-child{ padding-top:0; border-top:none; margin-top:0; }
+
+.password-wrap{ position:relative; }
+.password-wrap input{
+  width:100%;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:9px 40px 9px 11px;
+  color:var(--text);
+  font-family:inherit;
+  font-size:13.5px;
+}
+.password-wrap input:focus{ outline:none; border-color:var(--text-dimmer); }
+.password-toggle{
+  position:absolute;
+  right:6px;
+  top:50%;
+  transform:translateY(-50%);
+  background:transparent;
+  border:none;
+  color:var(--text-dimmer);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  padding:6px;
+  border-radius:6px;
+}
+.password-toggle:hover{ color:var(--text); background:var(--panel); }
+
+.weekday-picker{ display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; }
+.weekday-chip{
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  border-radius:7px;
+  padding:7px 4px;
+  font-size:12.5px;
+  font-family:inherit;
+  cursor:pointer;
+  text-align:center;
+  transition:background .12s ease, border-color .12s ease;
+}
+.weekday-chip:hover{ border-color:var(--text-dimmer); }
+.weekday-chip.active{ background:var(--blue); border-color:var(--blue); color:#fff; }
+.flag-dot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  margin-right:6px;
+  vertical-align:middle;
+}
+.drawer-actions{ display:flex; gap:10px; margin-top:6px; }
+.drawer-actions .btn-primary, .drawer-actions .btn-ghost{ flex:1; justify-content:center; }
+
+.field-hint{ font-size:12px; color:var(--text-dimmer); line-height:1.5; margin:-6px 0 0; }
+.checkbox-field{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  font-size:12.5px;
+  color:var(--text-dim);
+  cursor:pointer;
+  line-height:1.4;
+  margin-top:-4px;
+}
+.checkbox-field input{ width:auto; margin-top:2px; accent-color:var(--red); cursor:pointer; }
+.checkbox-field.checkbox-inline{ align-items:center; }
+.checkbox-field.checkbox-inline input{ margin-top:0; }
+
+.toggle-setting{
+  display:flex;
+  align-items:flex-start;
+  gap:13px;
+  padding:13px 15px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin-bottom:16px;
+  cursor:pointer;
+  transition:border-color .12s ease;
+}
+.toggle-setting:hover{ border-color:#3A3F4A; }
+.toggle-switch-input{ position:absolute; opacity:0; width:0; height:0; pointer-events:none; }
+.toggle-switch-track{
+  position:relative;
+  width:38px;
+  height:22px;
+  border-radius:20px;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  flex-shrink:0;
+  margin-top:1px;
+  transition:background .15s ease, border-color .15s ease;
+}
+.toggle-switch-thumb{
+  position:absolute;
+  top:2px;
+  left:2px;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:var(--text-dimmer);
+  transition:transform .15s ease, background .15s ease;
+}
+.toggle-switch-input:checked ~ .toggle-switch-track{ background:rgba(228,55,43,0.18); border-color:var(--red); }
+.toggle-switch-input:checked ~ .toggle-switch-track .toggle-switch-thumb{ transform:translateX(16px); background:var(--red); }
+.toggle-setting-text{ display:flex; flex-direction:column; gap:3px; }
+.toggle-setting-title{ font-size:13.5px; font-weight:600; color:var(--text); }
+.toggle-setting-desc{ font-size:12px; color:var(--text-dimmer); line-height:1.45; }
+.toggle-setting-disabled{ cursor:not-allowed; opacity:0.55; }
+.toggle-setting-disabled:hover{ border-color:var(--border); }
+
+.agencia-picker{ position:relative; }
+.agencia-picker input{
+  width:100%;
+  box-sizing:border-box;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:9px 11px;
+  color:var(--text);
+  font-family:inherit;
+  font-size:13.5px;
+  transition:border-color .12s ease, box-shadow .12s ease;
+}
+.agencia-picker input::placeholder{ color:var(--text-dimmer); }
+.agencia-picker input:hover{ border-color:var(--text-dimmer); }
+.agencia-picker input:focus{
+  outline:none;
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(76,139,232,0.15);
+}
+.agencia-picker-list{
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  right:0;
+  z-index:40;
+  background:var(--panel-2);
+  border:1px solid var(--text-dimmer);
+  border-radius:8px;
+  max-height:220px;
+  overflow-y:auto;
+  box-shadow:0 12px 28px rgba(0,0,0,0.45);
+  animation:pickerListIn .12s ease-out;
+}
+@keyframes pickerListIn{
+  from{ opacity:0; transform:translateY(-4px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+.agencia-picker-item{
+  display:block;
+  width:100%;
+  text-align:left;
+  padding:10px 12px;
+  background:none;
+  border:none;
+  color:var(--text);
+  font-size:13px;
+  cursor:pointer;
+}
+.agencia-picker-item:hover{ background:var(--panel); }
+.agencia-picker-item + .agencia-picker-item{ border-top:1px solid var(--border); }
+.agencia-picker-empty{ padding:10px 12px; font-size:12.5px; color:var(--text-dimmer); }
+.agencia-picker-selected{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:9px 12px;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  font-size:13px;
+  color:var(--text);
+}
+.picker-confirm{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin:8px 0 0;
+  padding:7px 10px;
+  background:rgba(60,179,113,0.1);
+  border:1px solid rgba(60,179,113,0.25);
+  border-radius:7px;
+  color:var(--green);
+  font-size:12px;
+  line-height:1.4;
+}
+.picker-confirm svg{ flex-shrink:0; }
+
+.date-add-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.date-add-row input{ flex:1; min-width:120px; }
+.date-add-row select{
+  flex:0 0 auto;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:9px 10px;
+  color:var(--text);
+  font-family:inherit;
+  font-size:13.5px;
+}
+.date-chip-list{ display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+.date-chip{
+  display:inline-flex; align-items:center; gap:5px;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:20px;
+  padding:4px 8px 4px 10px;
+  font-size:12px;
+  font-family:'IBM Plex Mono', monospace;
+}
+.date-chip button{
+  background:transparent; border:none; color:var(--text-dimmer);
+  cursor:pointer; display:flex; align-items:center; padding:2px;
+}
+.date-chip button:hover{ color:var(--red); }
+
+/* Confirm dialog */
+.confirm-overlay{
+  position:fixed; inset:0;
+  background:rgba(10,11,13,0.6);
+  display:flex; align-items:center; justify-content:center;
+  z-index:60;
+  padding:20px;
+}
+.confirm-panel{
+  width:380px;
+  max-width:100%;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:22px;
+  animation:slideIn .15s ease-out;
+}
+.confirm-panel h3{ font-family:'Space Grotesk', sans-serif; font-size:16px; font-weight:600; margin:0 0 8px; }
+.confirm-panel p{ font-size:13.5px; color:var(--text-dim); line-height:1.5; margin:0 0 18px; }
+.confirm-panel strong{ color:var(--text); font-weight:600; }
+.aviso-veiculacao-lista{ font-size:13.5px; color:var(--text-dim); line-height:1.6; margin:0 0 18px; padding-left:18px; max-height:180px; overflow-y:auto; }
+.agency-notice{
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 12px;
+  font-size:13px;
+  color:var(--text-dim);
+  line-height:1.5;
+  margin:-6px 0 18px;
+}
+.link-btn{
+  background:none;
+  border:none;
+  padding:0;
+  color:var(--blue);
+  font:inherit;
+  font-weight:600;
+  text-decoration:underline;
+  cursor:pointer;
+}
+.link-btn:hover{ opacity:0.85; }
+
+/* Popup de visualização (olhinho) */
+.view-panel{
+  width:420px;
+  max-width:100%;
+  max-height:85vh;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:22px;
+  display:flex;
+  flex-direction:column;
+  animation:slideIn .15s ease-out;
+}
+.view-panel-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:16px;
+}
+.view-panel-header h3{
+  font-family:'Space Grotesk', sans-serif;
+  font-size:16px;
+  font-weight:600;
+  margin:0;
+  line-height:1.3;
+}
+.view-panel-body{
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-bottom:16px;
+}
+.view-field-row{ display:flex; flex-direction:column; gap:2px; }
+.view-field-label{ font-size:11.5px; color:var(--text-dimmer); text-transform:uppercase; letter-spacing:0.03em; }
+.view-field-value{ font-size:13.5px; color:var(--text); line-height:1.5; white-space:pre-wrap; word-break:break-word; }
+.view-copy-actions{ display:flex; flex-direction:column; gap:8px; margin:-6px 0 14px; }
+.copy-btn{ display:flex; align-items:center; justify-content:center; gap:6px; width:100%; }
+.view-close-btn{ flex:none; width:100%; justify-content:center; }
+
+/* Login */
+.login-shell{
+  position:relative;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'IBM Plex Sans', system-ui, sans-serif;
+  padding:20px;
+}
+.login-card{
+  width:380px;
+  max-width:100%;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:28px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.login-brand{ padding:0 0 18px; border-bottom:1px solid var(--border); margin-bottom:2px; }
+.login-error{ color:var(--red); font-size:13px; margin:-6px 0 0; line-height:1.4; }
+.login-submit{ width:100%; justify-content:center; margin-top:4px; }
+
+/* Bloco do usuário logado + sair (sidebar) */
+.user-block{
+  border-top:1px solid var(--border);
+  padding-top:14px;
+  margin-top:6px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.user-block-name{
+  font-size:13px;
+  color:var(--text);
+  font-weight:500;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.user-admin-tag{
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:0.04em;
+  color:var(--blue);
+  background:#132A3E;
+  border:1px solid #1E4463;
+  border-radius:20px;
+  padding:2px 8px;
+}
+.user-logout-btn{
+  display:flex; align-items:center; gap:6px;
+  justify-content:flex-start;
+  padding:7px 10px;
+  font-size:12.5px;
+}
+
+/* Botão de alto contraste — mesma pegada visual do botão de sair, tanto
+   na sidebar quanto (posicionado no canto) na tela de login. */
+.theme-toggle-btn{
+  display:flex; align-items:center; gap:6px;
+  justify-content:flex-start;
+  padding:7px 10px;
+  font-size:12.5px;
+  width:100%;
+}
+.login-theme-toggle{
+  position:absolute;
+  top:16px;
+  right:16px;
+  width:auto;
+}
+
+/* Editor de permissões por aba */
+.permissions-grid{ display:flex; flex-direction:column; gap:12px; }
+.permission-row{ display:flex; flex-direction:column; gap:6px; }
+.permission-tab-label{ font-size:12.5px; color:var(--text); font-weight:500; }
+.permission-options{ display:flex; gap:6px; flex-wrap:wrap; }
+.permission-chip{
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  border-radius:7px;
+  padding:6px 11px;
+  font-size:12px;
+  font-family:inherit;
+  cursor:pointer;
+}
+.permission-chip:hover{ border-color:var(--text-dimmer); }
+.permission-chip.active{ background:var(--blue); border-color:var(--blue); color:#fff; }
+
+.you-tag{ color:var(--text-dimmer); font-weight:400; }
+.user-nome-completo{ color:var(--text-dimmer); font-weight:400; font-size:12px; margin-top:2px; }
+.permissions-cell{ font-size:12.5px; color:var(--text-dim); }
+.no-access-hint{ font-size:13px; color:var(--text-dimmer); padding:16px 4px; line-height:1.5; }
+
+/* Responsive */
+@media (max-width: 880px){
+  .stat-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+  .sidebar{
+    position:fixed;
+    left:-260px;
+    top:0;
+    z-index:60;
+    transition:left .18s ease;
+    box-shadow:0 0 0 rgba(0,0,0,0);
+  }
+  .sidebar.open{ left:0; box-shadow:8px 0 24px rgba(0,0,0,0.4); }
+  .mobile-only{ display:inline-flex; }
+  .mobile-overlay{ display:block; position:fixed; inset:0; background:rgba(10,11,13,0.55); z-index:55; }
+  .topbar{ padding:18px 18px 4px; }
+  /* Mesma régua do desktop: o respiro pro balão de chat fica no filho
+     (`.content > div`), não aqui (ver comentário na regra `.content`
+     principal). */
+  .content{ padding:14px 18px 0; }
+  .content > div{ padding-bottom:110px; }
+  .notif-banner{ margin:0 18px 4px; flex-wrap:wrap; row-gap:10px; align-items:flex-start; padding:14px 16px; }
+  .notif-banner svg{ margin-top:2px; }
+  .notif-banner .btn-primary{ margin-left:26px; }
+  .notif-banner .icon-btn{ margin-left:auto; }
+
+  /* Tabelas em tela pequena continuam maiores que a tela e rolam de lado
+     (setas de sombra nas bordas já indicam isso), mas antes disso a
+     primeira coluna (o que identifica a linha) e os botões de ação
+     ficavam soltos, exigindo rolar bem longe pra editar/apagar algo. Agora
+     as duas ficam fixas, e só as colunas do meio rolam. */
+  .table-wrap table thead th:first-child,
+  .table-wrap table tbody td:first-child{
+    position:sticky;
+    left:0;
+    z-index:2;
+    background:var(--panel);
+  }
+  .table-wrap table thead th.actions-col,
+  .table-wrap table tbody td.actions-col{
+    position:sticky;
+    right:0;
+    z-index:2;
+    background:var(--panel);
+  }
+  .table-wrap table tbody tr:hover td:first-child,
+  .table-wrap table tbody tr:hover td.actions-col{
+    background:var(--panel-2);
+  }
+  .table-wrap table tbody tr.today-row td:first-child,
+  .table-wrap table tbody tr.today-row td.actions-col{
+    background:#241512;
+  }
+  .table-wrap table tbody td:first-child{
+    box-shadow:1px 0 0 var(--border);
+  }
+  .table-wrap table tbody td.actions-col{
+    box-shadow:-1px 0 0 var(--border);
+  }
+
+  /* Alvos de toque maiores (botões de ícone, checkboxes) pra ficar mais
+     fácil de acertar com o dedo. */
+  .icon-btn{ padding:9px; }
+  .app-checkbox{ width:20px; height:20px; transform:scale(1.15); }
+  .theme-toggle-btn, .user-logout-btn{ padding:10px; }
+
+  /* Item do roteiro do Espelho: em tela larga cabe tudo numa linha só
+     (alça + título + duração + botões), mas no celular isso espremia o
+     título até sobrar só 4-5 letras visíveis (ex: "MOBII" de um item que
+     começava com "MOBILE..."), tornando impossível saber qual item era
+     cada linha. Quebra em duas linhas: título ocupa a largura toda
+     primeiro, duração + botões vêm embaixo. */
+  .espelho-item-head{ flex-wrap:wrap; row-gap:6px; }
+  .espelho-item-retranca{ flex:1 1 220px; }
+  .espelho-item-duracao{ margin-left:30px; }
+  .espelho-item-actions{ margin-left:auto; }
+}
+@media (max-width: 520px){
+  .stat-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; }
+  .stat-card{ padding:12px 14px; }
+  .stat-card .stat-label{ font-size:11.5px; }
+  .stat-card .stat-value{ font-size:19px; }
+  .toolbar{ flex-direction:row; flex-wrap:wrap; align-items:stretch; }
+  .search-wrap{ flex:1 1 100%; width:100%; }
+  .select-filter{ flex:1 1 calc(50% - 5px); width:auto; }
+  .toolbar > .checkbox-field{ flex:1 1 calc(50% - 5px); margin:0; }
+  .toolbar .btn-primary{ flex:1 1 100%; justify-content:center; }
+  .report-controls{ flex-direction:column; }
+  .report-controls .field{ min-width:0; width:100%; }
+  .drawer-panel{ width:100vw; max-width:100vw; }
+}
+
+/* Badge de "não lidas" no menu lateral (TO-DO já tem um padrão parecido
+   embutido em texto; aqui é uma bolinha numérica, separada, do lado do
+   rótulo da aba). */
+.nav-badge{
+  margin-left:auto;
+  background:var(--red);
+  color:#fff;
+  font-size:10.5px;
+  font-weight:700;
+  line-height:1;
+  padding:3px 6px;
+  border-radius:20px;
+  min-width:16px;
+  text-align:center;
+}
+
+/* ---------------------------------------------------------
+   Chat
+--------------------------------------------------------- */
+.content > .chat-shell{
+  flex-direction:row;
+  display:flex;
+  gap:0;
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+  background:var(--panel);
+  /* As duas primeiras tentativas aqui usaram `padding-bottom` (18px, depois
+     28px, depois 48px) achando que isso abriria um respiro entre o painel
+     do chat e a borda de baixo da janela — mas `.chat-shell` tem `flex:1`
+     dentro de `.content` (cresce pra preencher a altura disponível), e
+     nesse regime o `padding-bottom` só EMPURRA o conteúdo de dentro pra
+     cima, sem mudar a altura total da caixa: a borda de baixo do painel
+     continuava sempre grudada na borda da janela (foi isso que o print
+     real do usuário mostrou — o respiro "48px" só existia DENTRO do
+     painel, entre a caixa de digitar e a borda, nunca entre o painel e a
+     janela). O que realmente afasta a borda do painel da borda da janela
+     é `margin-bottom`: margem é subtraída do espaço disponível ANTES do
+     `flex-grow` preencher o resto, então o painel passa a crescer um
+     pouco menos e sobra uma faixa de fundo visível embaixo dele, antes da
+     borda da janela. A caixa de digitar (`.chat-composer`) continua com
+     seu próprio respiro interno (padding-bottom:18px) entre o texto e a
+     borda de baixo do painel — esse aqui funciona normalmente porque é
+     padding de um elemento com altura definida pelo conteúdo, não de um
+     item `flex:1`. */
+  margin-bottom:28px;
+  /* IMPORTANTE: zera o `padding-bottom:130px` que `.content > div` dá por
+     padrão pra TODA aba (reserva de espaço pro balão de chat flutuante não
+     cobrir a última linha de listas longas — ver comentário lá). Enquanto
+     essa regra aqui também declarava seu próprio `padding-bottom`, isso já
+     cancelava o valor genérico de 130px automaticamente (cascata por
+     propriedade: a declaração mais específica vencia). Mas ao trocar pra
+     `margin-bottom` (acima), a propriedade `padding-bottom` deixou de ser
+     redeclarada aqui — e os 130px genéricos voltaram a valer por tabela,
+     empurrando o conteúdo (sidebar/conversa/composer) 130px pra cima por
+     DENTRO do painel, sobrando um vão vazio enorme entre a caixa de
+     digitar e a borda do painel (foi exatamente esse vão "estranho" que
+     apareceu no print do usuário). Esse painel não precisa de reserva
+     nenhuma pro balão flutuante — ele nem aparece dentro da própria aba
+     Chat — então aqui o certo é sempre `padding-bottom:0`. */
+  padding-bottom:0;
+  /* E cancela também o `min-height:auto` que `.content > div` usa por
+     padrão (pra listas grandes rolarem a PÁGINA inteira — ver comentário
+     lá). Aqui é o oposto: a aba Chat é uma tela só (sidebar + conversa)
+     que tem que caber exatamente no espaço disponível, com a ROLAGEM
+     acontecendo por dentro da lista de mensagens (que já cuida disso
+     sozinha), não a página toda — por isso volta pro `min-height:0`
+     (permite encolher até caber, em vez de crescer do tamanho de uma
+     conversa inteira). */
+  min-height:0;
+}
+.chat-sidebar{
+  width:300px;
+  flex-shrink:0;
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+.chat-sidebar-header{
+  display:flex;
+  gap:8px;
+  padding:14px;
+  border-bottom:1px solid var(--border);
+}
+.chat-sidebar-header .chat-busca-usuario{ flex:1; }
+.chat-nova-btn{ padding:8px 10px; display:flex; align-items:center; justify-content:center; }
+.chat-busca-usuario{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 10px;
+}
+.chat-busca-usuario svg{ color:var(--text-dimmer); flex-shrink:0; }
+.chat-busca-usuario input{
+  border:none;
+  background:none;
+  outline:none;
+  color:var(--text);
+  font-size:15px;
+  width:100%;
+}
+.chat-conversas-lista{ flex:1; overflow-y:auto; padding:6px; }
+.chat-vazio-hint{ color:var(--text-dimmer); font-size:15px; padding:14px; text-align:center; }
+.chat-conversa-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  text-align:left;
+  padding:10px 8px;
+  border-radius:8px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  color:var(--text);
+}
+.chat-conversa-row:hover{ background:var(--panel-2); }
+.chat-conversa-row.active{ background:var(--panel-2); }
+.chat-avatar-wrap{ position:relative; flex-shrink:0; }
+.chat-avatar{
+  width:36px; height:36px;
+  border-radius:50%;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:600; color:var(--text-dim);
+  flex-shrink:0;
+  /* object-fit só tem efeito quando o Avatar renderiza uma <img> (foto de
+     perfil cadastrada) — fica sem efeito nenhum no <span> do círculo com a
+     inicial/ícone, então é seguro ficar numa regra só pros dois casos. */
+  object-fit:cover;
+}
+.chat-online-dot{
+  position:absolute; right:-1px; bottom:-1px;
+  width:10px; height:10px; border-radius:50%;
+  background:var(--green); border:2px solid var(--panel);
+}
+.chat-conversa-info{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.chat-conversa-nome{ font-size:15px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.chat-conversa-preview{ font-size:13.5px; color:var(--text-dimmer); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.chat-conversa-badge{
+  background:var(--red); color:#fff; font-size:10.5px; font-weight:700;
+  padding:3px 7px; border-radius:20px; flex-shrink:0;
+}
+
+.chat-thread{ flex:1; min-width:0; display:flex; flex-direction:column; min-height:0; }
+.chat-thread-vazio{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:10px; color:var(--text-dimmer); font-size:15px;
+}
+.chat-thread-header{
+  display:flex; align-items:center; gap:10px;
+  padding:12px 16px; border-bottom:1px solid var(--border); flex-shrink:0;
+}
+.chat-thread-header-info{ display:flex; flex-direction:column; gap:1px; min-width:0; }
+.chat-thread-header-info strong{ font-size:16px; }
+.chat-thread-header-sub{ font-size:13px; color:var(--text-dimmer); }
+.chat-thread-header .icon-btn{ margin-left:auto; }
+
+.chat-mensagens{
+  flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:8px;
+}
+.chat-bolha-wrap{ display:flex; align-items:flex-start; gap:4px; border-radius:12px; }
+.chat-bolha-wrap.minha{ justify-content:flex-end; }
+.chat-bolha-coluna{ max-width:68%; min-width:0; display:flex; flex-direction:column; }
+.chat-bolha-wrap.minha .chat-bolha-coluna{ align-items:flex-end; }
+.chat-bolha{
+  max-width:100%;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:9px 13px;
+  font-size:15.5px;
+}
+.chat-bolha-wrap.minha .chat-bolha{
+  background:var(--red);
+  border-color:var(--red);
+  color:#fff;
+}
+.chat-bolha-autor{ font-size:13px; font-weight:700; color:var(--blue); margin-bottom:2px; }
+.chat-bolha-texto{ white-space:pre-wrap; word-break:break-word; line-height:1.4; }
+.chat-bolha-rodape{
+  display:flex; align-items:center; gap:6px; justify-content:flex-end;
+  font-size:11.5px; opacity:0.75; margin-top:3px;
+}
+.chat-bolha-apagar{
+  background:none; border:none; cursor:pointer; color:inherit; opacity:0.7; padding:0;
+  display:flex; align-items:center;
+}
+.chat-bolha-apagar:hover{ opacity:1; }
+.chat-anexo-video{ display:block; margin-top:4px; width:100%; max-height:260px; border-radius:8px; background:#000; }
+.chat-anexo-expirado{
+  display:flex; align-items:center; gap:6px; margin-top:4px; font-size:14px;
+  opacity:0.8; font-style:italic;
+}
+.chat-anexo-imagem{ display:block; margin-top:4px; }
+.chat-anexo-imagem img{ max-width:100%; max-height:220px; border-radius:8px; display:block; }
+.chat-anexo-arquivo{
+  display:flex; align-items:center; gap:7px;
+  background:rgba(255,255,255,0.08);
+  border-radius:8px; padding:7px 9px; margin-top:4px;
+  color:inherit; text-decoration:none; font-size:14px;
+}
+.chat-anexo-nome{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.chat-anexo-tamanho{ opacity:0.7; font-size:12.5px; white-space:nowrap; }
+.chat-digitando{ font-size:13.5px; color:var(--text-dimmer); font-style:italic; padding:2px 4px; }
+
+.chat-composer{ border-top:1px solid var(--border); padding:14px 14px 18px; flex-shrink:0; position:relative; }
+.chat-composer-anexo{
+  display:flex; align-items:center; gap:6px; font-size:13.5px; color:var(--text-dim);
+  background:var(--panel-2); border:1px solid var(--border); border-radius:8px;
+  padding:5px 9px; margin-bottom:6px; width:fit-content;
+}
+.chat-composer-anexo button{ background:none; border:none; color:var(--text-dimmer); cursor:pointer; font-size:15px; line-height:1; }
+.chat-composer-linha{ display:flex; align-items:flex-end; gap:8px; }
+.chat-composer-linha textarea{
+  /* Cresce sozinha enquanto digita (ver AutoGrowTextarea), sem barra de
+     rolagem: `overflow-y:hidden` esconde a barrinha que aparecia por um
+     instante a cada linha nova. O teto de 50vh é só uma rede de segurança
+     (texto absurdamente grande não pode empurrar a conversa pra fora da
+     tela) — só aí a rolagem volta a aparecer. */
+  flex:1; resize:none; max-height:50vh; min-height:42px; overflow-y:hidden; line-height:1.4;
+  border:1px solid var(--border); border-radius:8px; background:var(--panel-2);
+  color:var(--text); padding:10px 13px; font-size:15.5px; font-family:inherit;
+}
+.chat-composer-linha textarea:focus{ outline:none; border-color:var(--text-dimmer); }
+.chat-emoji-btn.ativo{ color:var(--text); background:var(--panel-2); }
+
+/* Seletor de emojis — painel que abre logo acima da caixa de digitar,
+   dentro do próprio `.chat-composer` (por isso ele precisa de `position:
+   relative`), então funciona igual na aba de tela cheia e no balão
+   flutuante (que tem `overflow:hidden`, mas o painel fica dentro dele). */
+.emoji-picker{
+  position:absolute; left:10px; bottom:calc(100% + 6px);
+  width:min(320px, calc(100% - 20px));
+  background:var(--panel); border:1px solid var(--border); border-radius:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  display:flex; flex-direction:column; z-index:5; overflow:hidden;
+}
+.emoji-picker-abas{ display:flex; gap:2px; padding:6px; border-bottom:1px solid var(--border); background:var(--panel-2); }
+.emoji-picker-aba{
+  flex:1; background:none; border:none; border-radius:8px; cursor:pointer;
+  font-size:17px; line-height:1; padding:6px 0; opacity:0.6;
+}
+.emoji-picker-aba:hover{ opacity:1; }
+.emoji-picker-aba.ativa{ opacity:1; background:var(--panel); }
+.emoji-picker-titulo{ font-size:11px; color:var(--text-dimmer); padding:8px 10px 2px; }
+.emoji-picker-grade{
+  display:grid; grid-template-columns:repeat(8, 1fr); gap:2px;
+  padding:6px 8px 8px; max-height:210px; overflow-y:auto;
+}
+.emoji-picker-item{
+  background:none; border:none; border-radius:6px; cursor:pointer;
+  font-size:20px; line-height:1; padding:6px 0;
+}
+.emoji-picker-item:hover{ background:var(--panel-2); }
+.chat-popup-body .emoji-picker-grade{ max-height:150px; }
+.chat-enviar-btn{ padding:9px 12px; display:flex; align-items:center; justify-content:center; }
+
+.chat-erro{ color:var(--red); font-size:13.5px; }
+
+/* Aviso "arquivo grande demais — mande por link": cartão com ícone, título,
+   orientação e botão de fechar (no lugar do parágrafo vermelho solto). */
+.chat-aviso{
+  display:flex; align-items:flex-start; gap:12px;
+  margin:0 14px 10px; padding:12px 12px 12px 14px;
+  background:rgba(245,166,35,0.10);
+  border:1px solid rgba(245,166,35,0.45);
+  border-left:4px solid #f5a623;
+  border-radius:10px; flex-shrink:0;
+  animation:chat-aviso-entra .18s ease-out;
+}
+@keyframes chat-aviso-entra{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+.chat-aviso-icone{
+  width:34px; height:34px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(245,166,35,0.2); color:#f5a623;
+}
+.chat-aviso-corpo{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.chat-aviso-titulo{ font-size:14.5px; font-weight:700; color:var(--text); }
+.chat-aviso-arquivo{ font-size:12.5px; color:var(--text-dimmer); overflow-wrap:anywhere; }
+.chat-aviso-texto{ font-size:13.5px; line-height:1.45; color:var(--text-dim); }
+.chat-aviso-dicas{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.chat-aviso-dica{
+  font-size:12px; font-weight:600; padding:3px 9px; border-radius:20px;
+  background:var(--panel-2); border:1px solid var(--border); color:var(--text-dim);
+}
+.chat-aviso-fechar{
+  background:none; border:none; cursor:pointer; color:var(--text-dimmer);
+  padding:2px; border-radius:6px; display:flex; flex-shrink:0;
+}
+.chat-aviso-fechar:hover{ color:var(--text); background:var(--panel-2); }
+.chat-popup-body .chat-aviso{ margin:0 8px 8px; padding:10px; gap:9px; }
+.chat-popup-body .chat-aviso-icone{ width:28px; height:28px; }
+.chat-popup-body .chat-aviso-titulo{ font-size:13.5px; }
+.chat-popup-body .chat-aviso-texto{ font-size:12.5px; }
+
+/* Dica do clipe: balão que aparece ao passar o mouse / focar no botão
+   (no lugar do tooltip nativo do navegador). Abre pra cima, alinhado à
+   esquerda do botão, pra nunca ser cortado no balão flutuante. */
+.chat-dica-wrap{ position:relative; display:flex; }
+.chat-dica{
+  position:absolute; left:0; bottom:calc(100% + 10px);
+  width:230px; padding:11px 13px; border-radius:10px;
+  background:var(--panel); border:1px solid var(--border);
+  box-shadow:0 8px 24px rgba(0,0,0,0.45);
+  opacity:0; visibility:hidden; transform:translateY(4px);
+  transition:opacity .14s, transform .14s, visibility .14s;
+  pointer-events:none; z-index:6; text-align:left;
+}
+.chat-dica::after{
+  content:""; position:absolute; left:14px; bottom:-6px; width:10px; height:10px;
+  background:var(--panel); border-right:1px solid var(--border); border-bottom:1px solid var(--border);
+  transform:rotate(45deg);
+}
+.chat-dica-wrap:hover .chat-dica,
+.chat-dica-wrap:has(button:focus-visible) .chat-dica{ opacity:1; visibility:visible; transform:none; }
+/* Clicou no clipe: some até o mouse sair (não fica por cima do aviso). */
+.chat-dica-wrap.oculta .chat-dica{ opacity:0; visibility:hidden; }
+.chat-dica-titulo{ display:block; font-size:13.5px; font-weight:700; color:var(--text); margin-bottom:6px; }
+.chat-dica-linha{ display:flex; align-items:center; gap:7px; font-size:13px; color:var(--text-dim); line-height:1.5; }
+.chat-dica-linha svg{ color:var(--text-dimmer); flex-shrink:0; }
+.chat-dica-linha b{ color:var(--text); }
+.chat-dica-rodape{ display:block; margin-top:7px; padding-top:7px; border-top:1px solid var(--border); font-size:12px; color:var(--text-dimmer); line-height:1.4; }
+
+/* Modal de nova conversa / gerenciar grupo */
+.chat-nova-abas{ display:flex; gap:6px; margin-bottom:10px; }
+.chat-nova-aba{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:8px; border-radius:8px; border:1px solid var(--border); background:var(--panel-2);
+  color:var(--text-dim); font-size:12.5px; cursor:pointer;
+}
+.chat-nova-aba.active{ border-color:var(--red); color:var(--text); }
+.chat-usuarios-lista{ display:flex; flex-direction:column; gap:2px; max-height:320px; overflow-y:auto; margin-top:10px; }
+.chat-usuarios-lista-compacta{ max-height:200px; }
+.chat-usuario-row{
+  display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px;
+  border:none; background:none; cursor:pointer; text-align:left; width:100%; color:var(--text);
+}
+.chat-usuario-row:hover{ background:var(--panel-2); }
+.chat-usuario-row.selected{ background:var(--panel-2); }
+.chat-usuario-nome{ font-size:14.5px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.chat-grupo-foto-row{ display:flex; align-items:center; gap:14px; }
+.chat-grupo-foto-row .chat-avatar{ width:56px; height:56px; font-size:20px; }
+.chat-grupo-foto-acoes{ display:flex; flex-wrap:wrap; gap:8px; }
+.chat-grupo-foto-acoes .btn-ghost{ display:inline-flex; align-items:center; gap:6px; padding:7px 12px; font-size:12.5px; }
+
+.user-nome-cell{ display:flex; align-items:center; gap:10px; }
+.user-nome-cell .chat-avatar{ flex-shrink:0; }
+
+.chat-grupo-participantes-header{ display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
+.chat-participantes-lista{ display:flex; flex-direction:column; gap:2px; margin-top:8px; }
+.chat-participante-row{ display:flex; align-items:center; gap:10px; padding:7px 4px; }
+.chat-participante-row .icon-btn{ margin-left:auto; }
+.chat-sair-btn{ display:flex; align-items:center; gap:6px; color:var(--red); margin-right:auto; }
+
+@media (max-width: 880px){
+  .content > .chat-shell{ border:none; border-radius:0; }
+  .chat-sidebar{ width:100%; }
+  .chat-shell:has(.chat-thread-header) .chat-sidebar{ display:none; }
+  /* Faltava o par dessa regra: sem conversa aberta, a lista (sidebar) já
+     ocupa 100% da largura, mas o painel `.chat-thread` (com o texto de
+     "escolha uma conversa...") continha ficava renderizado do mesmo jeito,
+     espremido do lado — como os dois são flex-row, ele vazava por trás da
+     lista, cortado na borda direita da tela. Essa regra esconde o painel
+     de thread inteiro enquanto nenhuma conversa está aberta. */
+  .chat-shell:not(:has(.chat-thread-header)) .chat-thread{ display:none; }
+  .chat-bolha-coluna{ max-width:82%; }
+}
+
+/* ---------------------------------------------------------
+   Chat — balão flutuante (estilo Messenger), fica por cima de qualquer
+   aba (menos a própria aba Chat de tela cheia — ver `ativo` em
+   ChatFloatingWidget.jsx).
+--------------------------------------------------------- */
+.chat-widget-dock{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  z-index:60;
+  display:flex;
+  align-items:flex-end;
+  gap:10px;
+  flex-direction:row-reverse;
+  /* Fica fora de .app-shell no HTML (é montado como irmão dele, não como
+     filho — assim continua por cima da tela mesmo trocando de aba), então
+     não herda o `color`/`font-family` que .app-shell define pra tudo lá
+     dentro. Sem isso, o texto caía no preto padrão do navegador — ilegível
+     em cima dos balões escuros do tema padrão. */
+  color:var(--text);
+  font-family:'IBM Plex Sans', system-ui, sans-serif;
+  font-size:14px;
+  transition:transform .18s ease;
+}
+/* Quando um formulário (Drawer) abre em cima da tela principal, empurra o
+   balão de chat pro lado em vez de deixar ele sobreposto — o formulário
+   desliza encostado na borda direita (mesmo canto onde o balão mora, e com
+   z-index MENOR que o do balão — ver `.drawer-overlay`), então sem isso o
+   balão ficava flutuando por cima dos campos/botões dele.
+   Só o Drawer entra nessa regra: um diálogo central (`.confirm-overlay` —
+   usado por ConfirmDialog, ViewDialog/"olhinho" de visualização, e os
+   popups de escolha do Espelho como "Adicionar matéria"/"Item manual")
+   fica CENTRALIZADO na tela, não encostado na borda, então não chega a
+   cobrir o canto onde o balão mora — empurrar o balão nesse caso só fazia
+   ele saltar pro meio da tela à toa (já foi assim e foi reportado como
+   bug: o balão virava pro centro mesmo sendo um popup, não um formulário).
+   Importante: o seletor é restrito a overlays DENTRO de `.app-shell` — os
+   modais que o próprio balão abre (nova conversa, gerenciar grupo) também
+   usam `.confirm-overlay`, mas nascem dentro do `.chat-widget-dock` (fora
+   do `.app-shell`), então nunca disparariam essa regra mesmo se ela
+   incluísse `.confirm-overlay`. */
+.app-shell:has(.drawer-overlay) ~ .chat-widget-dock{
+  transform:translateX(-430px);
+}
+@media (max-width: 880px){
+  .app-shell:has(.drawer-overlay) ~ .chat-widget-dock{
+    transform:translateX(-200vw);
+  }
+}
+.chat-widget-launcher{
+  width:52px; height:52px;
+  border-radius:50%;
+  background:var(--red);
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 14px rgba(0,0,0,0.35);
+  flex-shrink:0;
+  position:relative;
+}
+.chat-widget-launcher:hover{ background:#c62f24; }
+.chat-widget-badge{
+  position:absolute; top:-3px; right:-3px;
+  background:#fff; color:var(--red);
+  font-size:10.5px; font-weight:800;
+  min-width:19px; height:19px; padding:0 4px;
+  border-radius:20px; border:2px solid var(--bg);
+  display:flex; align-items:center; justify-content:center;
+}
+.chat-widget-lista{
+  position:absolute;
+  right:0;
+  bottom:62px;
+  width:340px;
+  max-height:480px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.chat-widget-lista-itens{ max-height:330px; }
+.chat-widget-lista-header{ display:flex; gap:6px; }
+.chat-widget-lista-header .chat-busca-usuario{ flex:1; }
+.chat-widget-lista-header .chat-nova-btn{ padding:0 10px; }
+
+.chat-popup{
+  width:380px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  /* Antes só os cantos de cima eram arredondados (pensado pra um balão
+     "grudado" na borda inferior da tela) — mas como o balão flutua com
+     20px de respiro até a borda real (ver .chat-widget-dock), as quinas
+     retas de baixo só deixavam ele com cara de caixa quadrada. Agora é
+     arredondado dos 4 lados, como um cartão flutuante de verdade. */
+  border-radius:14px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  flex-shrink:0;
+}
+.chat-popup:not(.minimizado){ height:min(580px, calc(100vh - 110px)); }
+.chat-popup.minimizado{ width:200px; }
+.chat-popup-header{
+  display:flex; align-items:center; gap:8px;
+  padding:9px 8px;
+  background:var(--panel-2);
+  border:none;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;
+  width:100%;
+  text-align:left;
+  color:var(--text);
+  flex-shrink:0;
+}
+.chat-popup.minimizado .chat-popup-header{ border-bottom:none; border-radius:14px; }
+.chat-popup-nome{
+  flex:1; min-width:0; font-size:14px; font-weight:600;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.chat-popup-icon-btn{ padding:4px; flex-shrink:0; }
+.chat-avatar.small{ width:26px; height:26px; font-size:11px; }
+.chat-popup-body{ flex:1; min-height:0; display:flex; flex-direction:column; }
+.chat-popup-body .chat-mensagens{ padding:10px; }
+.chat-mensagens-compacta .chat-bolha-coluna{ max-width:85%; }
+.chat-mensagens-compacta .chat-bolha{ font-size:14px; }
+.chat-popup-body .chat-composer{ padding:8px 10px; }
+.chat-popup-body .chat-composer-linha textarea{ font-size:14px; min-height:36px; padding:8px 10px; }
+
+@media (max-width: 640px){
+  .chat-widget-dock{ right:12px; bottom:12px; gap:6px; }
+  .chat-popup{ width:min(92vw, 380px); }
+  .chat-popup:not(.minimizado){ height:min(72vh, 540px); }
+  .chat-widget-lista{ width:min(92vw, 340px); }
+}
+
+
+/* ===== Tooltip padrão (GlobalTooltip) — substitui o balão nativo do `title` ===== */
+.app-tooltip, .datepicker{ font-family:'IBM Plex Sans', system-ui, sans-serif; }
+.datepicker button{ font-family:inherit; }
+.app-tooltip{
+  position:fixed; z-index:1100; pointer-events:none;
+  max-width:260px; padding:7px 11px;
+  background:var(--panel); color:var(--text);
+  border:1px solid var(--border); border-radius:8px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  font-size:12.5px; font-weight:500; line-height:1.4; white-space:pre-line;
+  animation:app-tooltip-in .12s ease-out;
+}
+:root[data-theme="claro"] .app-tooltip{ box-shadow:0 6px 20px rgba(21,23,27,0.18); border-width:1.5px; }
+.app-tooltip::after{
+  content:""; position:absolute; left:calc(var(--seta, 20px) - 5px);
+  width:10px; height:10px; background:var(--panel); transform:rotate(45deg);
+}
+.app-tooltip.em-cima::after{ bottom:-6px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
+.app-tooltip.embaixo::after{ top:-6px; border-left:1px solid var(--border); border-top:1px solid var(--border); }
+@keyframes app-tooltip-in{ from{ opacity:0; } to{ opacity:1; } }
+
+/* ===== Campo de data + calendário (DateInput) ===== */
+.date-input{ position:relative; display:flex; min-width:0; }
+.date-input input{ flex:1; min-width:0; width:100%; padding-right:38px !important; }
+.date-input-btn{
+  position:absolute; right:4px; top:50%; transform:translateY(-50%);
+  width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  background:none; border:none; border-radius:6px; cursor:pointer; color:var(--text-dim);
+}
+.date-input-btn:hover:not(:disabled){ background:var(--panel); color:var(--text); }
+.date-input-btn:disabled{ opacity:0.4; cursor:not-allowed; }
+.date-input input.select-filter{ width:150px; }
+
+.datepicker{
+  position:fixed; z-index:1000;
+  background:var(--panel); color:var(--text);
+  border:1px solid var(--border); border-radius:14px;
+  box-shadow:0 14px 40px rgba(0,0,0,0.45);
+  padding:12px; user-select:none;
+  animation:app-tooltip-in .12s ease-out;
+}
+:root[data-theme="claro"] .datepicker{ box-shadow:0 10px 32px rgba(21,23,27,0.2); border-width:1.5px; }
+.datepicker-topo{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.datepicker-titulo{
+  display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:8px;
+  background:none; border:none; color:var(--text); cursor:pointer;
+  font-family:'Space Grotesk', sans-serif; font-size:15px; font-weight:600;
+}
+.datepicker-titulo:hover{ background:var(--panel-2); }
+.datepicker-seta{ font-size:10px; color:var(--text-dim); }
+.datepicker-nav{ display:flex; gap:2px; }
+.datepicker-nav button{
+  width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+  background:none; border:none; border-radius:8px; color:var(--text-dim); cursor:pointer;
+}
+.datepicker-nav button:hover{ background:var(--panel-2); color:var(--text); }
+.datepicker-semana, .datepicker-grade{ display:grid; grid-template-columns:repeat(7, 1fr); gap:2px; }
+.datepicker-semana span{ text-align:center; font-size:11.5px; font-weight:600; color:var(--text-dimmer); padding:6px 0; }
+.datepicker-dia{
+  height:36px; border-radius:50%; border:1px solid transparent; background:none;
+  color:var(--text); font-size:13.5px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .1s, border-color .1s;
+}
+.datepicker-dia:hover:not(:disabled):not(.selecionado){ background:var(--panel-2); }
+.datepicker-dia.fora{ color:var(--text-dimmer); opacity:0.55; }
+.datepicker-dia.fim-semana:not(.fora):not(.selecionado){ color:var(--text-dim); }
+.datepicker-dia.hoje:not(.selecionado){ border-color:var(--blue); color:var(--blue); font-weight:700; }
+.datepicker-dia.selecionado{ background:var(--red); border-color:var(--red); color:#fff; font-weight:700; }
+.datepicker-dia:disabled{ opacity:0.25; cursor:not-allowed; }
+.datepicker-dia:focus-visible, .datepicker-mes:focus-visible,
+.datepicker-rodape button:focus-visible, .datepicker-nav button:focus-visible, .datepicker-titulo:focus-visible{
+  outline:2px solid var(--blue); outline-offset:1px;
+}
+.datepicker-meses{ display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; padding:6px 0; }
+.datepicker-mes{
+  padding:14px 0; border-radius:10px; border:1px solid var(--border); background:var(--panel-2);
+  color:var(--text); font-size:14px; cursor:pointer; font-family:inherit;
+}
+.datepicker-mes:hover{ border-color:var(--text-dimmer); }
+.datepicker-mes.atual{ background:var(--red); border-color:var(--red); color:#fff; font-weight:700; }
+.datepicker-rodape{
+  display:flex; justify-content:space-between; margin-top:8px; padding-top:8px;
+  border-top:1px solid var(--border);
+}
+.datepicker-rodape button{
+  background:none; border:none; cursor:pointer; padding:6px 10px; border-radius:8px;
+  color:var(--blue); font-size:13px; font-weight:600;
+}
+.datepicker-rodape button:hover:not(:disabled){ background:var(--panel-2); }
+.datepicker-rodape button:disabled{ opacity:0.4; cursor:not-allowed; }
+
+/* ===== Lista da caixa de seleção (Select) ===== */
+.select-menu{
+  position:fixed; z-index:1000; overflow-y:auto;
+  background:var(--panel); color:var(--text);
+  border:1px solid var(--border); border-radius:12px; padding:5px;
+  box-shadow:0 14px 40px rgba(0,0,0,0.45);
+  font-family:'IBM Plex Sans', system-ui, sans-serif; font-size:13.5px;
+  animation:app-tooltip-in .1s ease-out;
+}
+:root[data-theme="claro"] .select-menu{ box-shadow:0 10px 32px rgba(21,23,27,0.2); border-width:1.5px; }
+.select-opcao{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:9px 11px; border-radius:8px; cursor:pointer; line-height:1.3;
+  color:var(--text-dim); user-select:none;
+}
+.select-opcao-texto{ flex:1; min-width:0; overflow-wrap:anywhere; }
+.select-opcao.ativa{ background:var(--panel-2); color:var(--text); }
+.select-opcao.selecionada{ color:var(--text); font-weight:600; }
+.select-opcao-check{ flex-shrink:0; color:var(--red); }
+.select-opcao.desativada{ opacity:0.4; cursor:not-allowed; }
+
+/* ===== Cabeçalho de tabela clicável (SortTh) ===== */
+thead th.th-sortable{ cursor:pointer; user-select:none; transition:color .12s; }
+thead th.th-sortable:hover{ color:var(--text); }
+thead th.th-sortable:focus-visible{ outline:2px solid var(--blue); outline-offset:-2px; }
+.th-sort-inner{ display:inline-flex; align-items:center; gap:5px; }
+.th-sort-seta{ opacity:0; transition:opacity .12s; flex-shrink:0; }
+thead th.th-sortable:hover .th-sort-seta, thead th.th-sortable:focus-visible .th-sort-seta{ opacity:0.5; }
+thead th.th-sortable.ativa{ color:var(--text); font-weight:600; }
+thead th.th-sortable.ativa .th-sort-seta{ opacity:1; color:var(--red); }
+
+
+/* ===== Chat: separador de dia, reações e respostas ===== */
+.chat-dia-separador{
+  display:flex; align-items:center; gap:12px; margin:12px 0 4px;
+  font-size:12.5px; font-weight:600; color:var(--text-dimmer);
+}
+.chat-dia-separador::before, .chat-dia-separador::after{ content:""; flex:1; height:1px; background:var(--border); }
+.chat-dia-separador span{
+  padding:3px 12px; border-radius:20px; background:var(--panel-2); border:1px solid var(--border);
+}
+
+.chat-acoes-msg{
+  display:flex; gap:3px; align-self:flex-start; margin-top:3px;
+  opacity:0; transition:opacity .12s;
+}
+.chat-bolha-wrap.minha .chat-acoes-msg{ order:-1; }
+.chat-bolha-wrap:hover .chat-acoes-msg,
+.chat-bolha-wrap:focus-within .chat-acoes-msg,
+.chat-bolha-wrap.ativa .chat-acoes-msg{ opacity:1; }
+.chat-acao-msg{
+  width:28px; height:28px; display:flex; align-items:center; justify-content:center;
+  background:var(--panel-2); border:1px solid var(--border); border-radius:50%;
+  color:var(--text-dim); cursor:pointer;
+}
+.chat-acao-msg:hover{ color:var(--text); border-color:var(--text-dimmer); }
+.chat-bolha-wrap.destaque .chat-bolha{ animation:chat-destaque 1.6s ease-out; }
+@keyframes chat-destaque{
+  0%, 40%{ box-shadow:0 0 0 3px rgba(76,139,232,0.65); }
+  100%{ box-shadow:0 0 0 3px rgba(76,139,232,0); }
+}
+
+/* Citação (a mensagem à qual esta responde), dentro do balão */
+.chat-citacao{
+  display:flex; flex-direction:column; gap:1px; width:100%; text-align:left;
+  background:rgba(0,0,0,0.18); border:none; border-left:3px solid var(--blue);
+  border-radius:6px; padding:5px 9px; margin-bottom:6px; cursor:pointer;
+  color:inherit; font-family:inherit;
+}
+.chat-bolha-wrap.minha .chat-citacao{ background:rgba(0,0,0,0.22); border-left-color:rgba(255,255,255,0.75); }
+.chat-citacao:hover{ filter:brightness(1.15); }
+.chat-citacao-autor{ font-size:12px; font-weight:700; opacity:0.95; }
+.chat-citacao-texto{
+  font-size:12.5px; opacity:0.85; line-height:1.35;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; overflow-wrap:anywhere;
+}
+
+/* Reações embaixo do balão */
+.chat-reacoes{ display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+.chat-bolha-wrap.minha .chat-reacoes{ justify-content:flex-end; }
+.chat-reacao{
+  display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:20px;
+  background:var(--panel-2); border:1px solid var(--border); color:var(--text);
+  font-size:14px; line-height:1.4; cursor:pointer;
+}
+.chat-reacao:hover{ border-color:var(--text-dimmer); }
+.chat-reacao.minha{ border-color:var(--blue); background:rgba(76,139,232,0.16); }
+.chat-reacao-n{ font-size:12px; font-weight:600; color:var(--text-dim); }
+
+/* Seletor de reação (portal) */
+.reacao-picker{
+  position:fixed; z-index:1000; padding:6px;
+  background:var(--panel); border:1px solid var(--border); border-radius:26px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4); animation:app-tooltip-in .1s ease-out;
+  font-family:'IBM Plex Sans', system-ui, sans-serif;
+}
+:root[data-theme="claro"] .reacao-picker{ box-shadow:0 8px 24px rgba(21,23,27,0.2); border-width:1.5px; }
+.reacao-picker-rapidas{ display:flex; align-items:center; gap:2px; }
+.reacao-opcao{
+  width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+  background:none; border:none; border-radius:50%; font-size:22px; line-height:1; cursor:pointer;
+  color:var(--text-dim); transition:transform .1s, background .1s;
+}
+.reacao-opcao:hover{ background:var(--panel-2); transform:scale(1.18); }
+.reacao-opcao.atual{ background:var(--panel-2); box-shadow:inset 0 0 0 2px var(--blue); }
+.reacao-picker-grade{
+  display:grid; grid-template-columns:repeat(8, 38px); gap:2px;
+  margin-top:6px; padding:6px 2px 2px; border-top:1px solid var(--border);
+}
+.reacao-picker-grade .reacao-opcao{ font-size:20px; }
+
+/* Barra "Respondendo a ..." em cima da caixa de digitar */
+.chat-resposta-barra{
+  display:flex; align-items:center; gap:10px; padding:8px 10px; margin-bottom:8px;
+  background:var(--panel-2); border:1px solid var(--border); border-left:3px solid var(--blue);
+  border-radius:8px;
+}
+.chat-resposta-icone{ color:var(--blue); flex-shrink:0; }
+.chat-resposta-corpo{ flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
+.chat-resposta-autor{ font-size:12.5px; font-weight:700; color:var(--blue); }
+.chat-resposta-texto{ font-size:13px; color:var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.chat-resposta-fechar{
+  background:none; border:none; cursor:pointer; color:var(--text-dimmer);
+  padding:3px; border-radius:6px; display:flex; flex-shrink:0;
+}
+.chat-resposta-fechar:hover{ color:var(--text); background:var(--panel); }
+.chat-popup-body .chat-resposta-barra{ padding:6px 8px; margin-bottom:6px; }
+
+/* ===== Chat: áudio (player no balão e barra de gravação) ===== */
+.chat-audio{ display:flex; align-items:center; gap:9px; min-width:210px; padding:4px 0 2px; }
+.chat-audio audio{ display:none; }
+.chat-audio-play{
+  width:34px; height:34px; flex-shrink:0; border-radius:50%; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--red); color:#fff;
+}
+.chat-bolha-wrap.minha .chat-audio-play{ background:#fff; color:var(--red); }
+.chat-audio-meio{ flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
+.chat-audio-barra{ position:relative; height:16px; cursor:pointer; display:flex; align-items:center; }
+.chat-audio-barra::before{ content:""; position:absolute; left:0; right:0; height:4px; border-radius:4px; background:currentColor; opacity:0.25; }
+.chat-audio-progresso{ position:absolute; left:0; height:4px; border-radius:4px; background:var(--red); }
+.chat-bolha-wrap.minha .chat-audio-progresso{ background:#fff; }
+.chat-audio-bolinha{ position:absolute; width:12px; height:12px; margin-left:-6px; border-radius:50%; background:var(--red); box-shadow:0 0 0 2px var(--panel-2); }
+.chat-bolha-wrap.minha .chat-audio-bolinha{ background:#fff; box-shadow:0 0 0 2px var(--red); }
+.chat-audio-tempo{ font-size:12px; opacity:0.85; font-variant-numeric:tabular-nums; }
+.chat-audio-vel{
+  flex-shrink:0; min-width:38px; padding:3px 6px; border-radius:12px; cursor:pointer;
+  background:rgba(128,128,128,0.2); border:none; color:inherit; font-size:11.5px; font-weight:700;
+}
+.chat-audio-vel:hover{ background:rgba(128,128,128,0.35); }
+.chat-mensagens-compacta .chat-audio{ min-width:180px; }
+
+.chat-gravando{ display:flex; align-items:center; gap:10px; min-height:42px; }
+.chat-gravando-cancelar{ color:var(--text-dim); }
+.chat-gravando-cancelar:hover{ color:var(--red); }
+.chat-gravando-ponto{ width:10px; height:10px; border-radius:50%; background:var(--red); animation:chat-grava-pulsa 1s ease-in-out infinite; flex-shrink:0; }
+@keyframes chat-grava-pulsa{ 0%, 100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.35; transform:scale(0.75); } }
+.chat-gravando-tempo{ font-family:'IBM Plex Mono', monospace; font-size:15px; font-weight:600; min-width:44px; }
+.chat-gravando-texto{ flex:1; min-width:0; font-size:13px; color:var(--text-dimmer); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.chat-popup-body .chat-gravando-texto{ display:none; }
+.chat-popup-body .chat-gravando-tempo{ flex:1; }
+
+/* ===== Chat: arrastar e soltar arquivo ===== */
+.chat-thread, .chat-popup-body{ position:relative; }
+.chat-drop-overlay{
+  position:absolute; inset:0; z-index:20; pointer-events:none;
+  display:flex; align-items:center; justify-content:center; padding:18px;
+  background:rgba(20,22,26,0.72); backdrop-filter:blur(2px);
+}
+:root[data-theme="claro"] .chat-drop-overlay{ background:rgba(244,245,247,0.78); }
+.chat-drop-caixa{
+  width:100%; height:100%; max-width:520px; max-height:260px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  border:2.5px dashed var(--blue); border-radius:16px; background:var(--panel);
+  color:var(--blue); text-align:center; padding:16px;
+  animation:app-tooltip-in .12s ease-out;
+}
+.chat-drop-caixa strong{ font-size:17px; color:var(--text); }
+.chat-drop-caixa span{ font-size:13px; color:var(--text-dim); }
+.chat-popup-body .chat-drop-overlay{ padding:10px; }
+.chat-popup-body .chat-drop-caixa strong{ font-size:15px; }
+
+/* ===== Chat no celular (telas de toque): responder e reagir mais fáceis ===== */
+.chat-bolha{ touch-action:pan-y; }
+@media (hover: none){
+  /* As ações aparecem numa linha embaixo da mensagem (não espremem o balão) */
+  .chat-bolha-wrap{ flex-wrap:wrap; }
+  .chat-acoes-msg{
+    display:none; flex-basis:100%; order:2; align-self:auto; margin:0;
+    gap:10px; justify-content:flex-start; opacity:1;
+  }
+  .chat-bolha-wrap.minha .chat-acoes-msg{ order:2; justify-content:flex-end; }
+  .chat-bolha-wrap.ativa .chat-acoes-msg{ display:flex; }
+  .chat-acao-msg{ width:auto; height:36px; border-radius:18px; padding:0 14px; gap:6px; font-size:13px; font-family:inherit; }
+  .chat-acao-msg .rotulo{ display:inline; }
+  .chat-reacao{ padding:4px 10px; font-size:16px; }
+  /* Seletor: emojis maiores e a grade cabe em telas estreitas */
+  .reacao-opcao{ width:40px; height:40px; }
+  .reacao-picker{ max-width:calc(100vw - 16px); }
+  .reacao-picker-rapidas{ gap:0; }
+  .reacao-picker-grade{ grid-template-columns:repeat(6, 40px); justify-content:center; }
+  .chat-resposta-fechar{ padding:8px; }
+}
+@media (hover: hover){ .chat-acao-msg .rotulo{ display:none; } }
+
+/* ===== Aba Chat no celular: tela cheia, cabeçalho e lista mais confortáveis ===== */
+@media (max-width: 880px){
+  /* Ocupa a largura toda (some a "moldura" de 18px dos lados) */
+  .content > .chat-shell{ margin:0 -18px; border:none; border-top:1px solid var(--border); }
+  .chat-sidebar{ border-right:none; }
+  .chat-sidebar-header{ padding:10px 12px; }
+  .chat-busca-usuario{ padding:10px 12px; border-radius:10px; }
+  .chat-busca-usuario input{ font-size:16px; }
+  .chat-nova-btn{ min-width:44px; }
+  .chat-conversas-lista{ padding:4px 6px 12px; }
+  .chat-conversa-row{ padding:12px 10px; gap:12px; border-radius:12px; }
+  .chat-conversa-row .chat-avatar{ width:46px; height:46px; font-size:17px; }
+  .chat-conversa-nome{ font-size:16px; }
+  .chat-conversa-preview{ font-size:14px; }
+  .chat-conversa-badge{ font-size:12px; padding:3px 8px; }
+
+  /* Cabeçalho da conversa: voltar à esquerda, nome ao lado */
+  .chat-thread-header{ padding:8px 10px; gap:8px; }
+  .chat-thread-header .icon-btn{ margin-left:0; width:42px; height:42px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .chat-thread-header .icon-btn:not(.mobile-only){ margin-left:auto; }
+  .chat-thread-header .chat-avatar{ width:40px; height:40px; }
+  .chat-thread-header-info{ flex:1; }
+  .chat-thread-header-info strong{ font-size:16.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* Mensagens e caixa de digitar */
+  .chat-mensagens{ padding:12px 10px; }
+  .chat-bolha-coluna{ max-width:86%; }
+  .chat-composer{ padding:8px 10px calc(10px + env(safe-area-inset-bottom, 0px)); }
+  .chat-composer-linha{ gap:6px; }
+  .chat-composer-linha textarea{ font-size:16px; border-radius:20px; padding:10px 14px; } /* 16px: o iPhone não dá zoom ao digitar */
+  .chat-composer-linha .icon-btn, .chat-composer-linha .chat-emoji-btn, .chat-composer-linha .chat-clipe-btn{ min-width:40px; min-height:40px; }
+  .chat-enviar-btn{ min-width:44px; min-height:44px; border-radius:50%; }
+}
+
+/* Botão amarelo (mesmo tom do selo "Pendente") — Cancelar contas futuras */
+.btn-amarelo{ background:#33260F !important; color:#E8A93A !important; border:1px solid #5A4419 !important; font-weight:600; }
+.btn-amarelo:hover{ background:#40300F !important; border-color:#7A5B1F !important; }
+:root[data-theme="claro"] .btn-amarelo{ background:#FBEFD3 !important; color:#8A5A06 !important; border-color:#E3C27E !important; }
+:root[data-theme="claro"] .btn-amarelo:hover{ background:#F7E4B5 !important; }
+.cancel-picker-info{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+.cancel-picker-sub{ font-size:12px; color:var(--text-dimmer); }
+
+/* ===== Atalhos: separação entre Links e Textos para copiar ===== */
+.atalhos-filtro{ display:flex; flex-wrap:wrap; gap:6px; margin:14px 0 4px; }
+.atalhos-filtro-btn{
+  display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:20px;
+  background:var(--panel); border:1px solid var(--border); color:var(--text-dim);
+  font:inherit; font-size:13.5px; font-weight:500; cursor:pointer;
+}
+.atalhos-filtro-btn:hover{ color:var(--text); border-color:var(--text-dimmer); }
+.atalhos-filtro-btn.ativo{ color:var(--text); background:var(--panel-2); border-color:var(--blue); }
+.atalhos-filtro-n{ font-size:12px; font-weight:700; color:var(--text-dimmer); }
+.atalhos-secao{ margin-top:22px; }
+.atalhos-secao-titulo{
+  display:flex; align-items:center; gap:8px; margin:0 0 12px; font-size:15px; font-weight:700; color:var(--text);
+}
+.atalhos-secao-dica{ font-size:12.5px; font-weight:400; color:var(--text-dimmer); }
+
+.textos-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(330px, 1fr)); gap:12px; align-items:start; }
+.texto-card{
+  background:var(--panel); border:1px solid var(--border); border-left:3px solid var(--amber);
+  border-radius:10px; padding:14px 16px; display:flex; flex-direction:column; gap:10px;
+}
+.texto-card-topo{ display:flex; align-items:flex-start; gap:10px; }
+.texto-card-titulo{ flex:1; min-width:0; }
+.texto-card-acoes{ display:flex; gap:2px; flex-shrink:0; margin:-4px -6px 0 0; }
+.texto-card-caixa{
+  background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:10px 12px;
+  font-size:13.5px; line-height:1.5; color:var(--text); white-space:pre-wrap; overflow-wrap:anywhere;
+  max-height:6.4em; overflow:hidden; position:relative; user-select:text;
+}
+.texto-card-caixa:not(.aberto)::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:2.2em;
+  background:linear-gradient(to bottom, transparent, var(--panel-2));
+}
+.texto-card-caixa.aberto{ max-height:none; }
+.texto-card-rodape{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.texto-card-mais{
+  display:inline-flex; align-items:center; gap:4px; background:none; border:none; cursor:pointer;
+  color:var(--text-dim); font:inherit; font-size:13px; padding:6px 4px;
+}
+.texto-card-mais:hover{ color:var(--text); }
+.texto-card-copiar{
+  display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:8px; cursor:pointer;
+  font:inherit; font-size:13.5px; font-weight:600;
+  background:#33260F; color:#E8A93A; border:1px solid #5A4419;
+}
+.texto-card-copiar:hover{ background:#40300F; border-color:#7A5B1F; }
+.texto-card-copiar.copiado{ background:rgba(79,190,126,0.16); color:var(--green); border-color:var(--green); }
+:root[data-theme="claro"] .texto-card-copiar{ background:#FBEFD3; color:#8A5A06; border-color:#E3C27E; }
+:root[data-theme="claro"] .texto-card-copiar:hover{ background:#F7E4B5; }
+:root[data-theme="claro"] .texto-card-copiar.copiado{ background:#DDF3E5; color:#1E7A45; border-color:#7CC79A; }
+@media (max-width: 640px){ .textos-grid{ grid-template-columns:1fr; } }
+
+/* ===== Tabelas como cartões no celular (≤640px) =====
+   Antes a tabela rolava de lado e cortava colunas (CNPJ, vencimento...).
+   Agora cada linha vira um cartão "Coluna: valor". Os nomes das colunas vêm
+   do atributo data-label, preenchido por MobileTables.jsx. Os cabeçalhos
+   ordenáveis viram "chips" em cima da lista ("Ordenar por"). */
+@media (max-width: 640px){
+  .table-wrap{ background:none; border:none; border-radius:0; overflow:visible; }
+  .table-wrap table, .table-wrap tbody{ display:block; min-width:0; width:100%; }
+
+  /* Ordenar por */
+  .table-wrap thead{ display:block; }
+  .table-wrap thead:not(:has(.th-sortable)){ display:none; }
+  .table-wrap thead tr{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:2px 0 12px; }
+  .table-wrap thead tr::before{ content:"Ordenar por"; font-size:12.5px; color:var(--text-dimmer); margin-right:2px; }
+  .table-wrap thead th{
+    display:none; padding:7px 12px; border:1px solid var(--border); border-radius:20px;
+    background:var(--panel); font-size:12.5px; color:var(--text-dim);
+  }
+  .table-wrap thead th.th-sortable{ display:inline-flex; min-height:34px; align-items:center; }
+  .table-wrap thead th.th-sortable.ativa{ color:var(--text); border-color:var(--blue); }
+
+  /* Um cartão por linha */
+  .table-wrap tbody tr{
+    display:block; position:relative; background:var(--panel); border:1px solid var(--border);
+    border-radius:12px; padding:12px 14px; margin-bottom:10px;
+  }
+  .table-wrap tbody tr:hover{ background:var(--panel); }
+  .table-wrap tbody tr.today-row{ background:rgba(228,55,43,0.08); border-color:rgba(228,55,43,0.35); }
+  .table-wrap tbody td{
+    display:block; position:relative; left:auto; right:auto; box-shadow:none; background:none;
+    border:none; padding:5px 0 5px 42%; min-height:26px; font-size:14px; text-align:left; width:auto;
+    overflow-wrap:anywhere; white-space:normal !important;
+  }
+  .table-wrap tbody td::before{
+    content:attr(data-label); position:absolute; left:0; top:6px; width:38%;
+    font-size:12.5px; color:var(--text-dimmer); font-weight:400; line-height:1.35;
+  }
+  .table-wrap tbody td[data-label=""]::before{ content:none; }
+  .table-wrap tbody td[data-label=""]:not(.actions-col):not(.empty-row):not(:first-child){ padding-left:0; }
+
+  /* Primeira célula = título do cartão */
+  .table-wrap tbody td:first-child{
+    padding:0 0 8px; margin-bottom:6px; border-bottom:1px solid var(--border);
+    font-size:15.5px; font-weight:600;
+  }
+  .table-wrap tbody td:first-child::before{ content:none; }
+
+  /* Botões de ação (ver / editar / apagar) numa faixa embaixo, bem tocáveis */
+  .table-wrap tbody td.actions-col{
+    display:flex; justify-content:flex-end; gap:4px; padding:8px 0 0; margin-top:6px;
+    border-top:1px solid var(--border);
+  }
+  .table-wrap tbody td.actions-col::before{ content:none; }
+  .table-wrap tbody td.actions-col .icon-btn{ padding:11px; }
+
+  /* Linha de "nenhum resultado" */
+  .table-wrap tbody td.empty-row{ padding:18px 6px; text-align:center; border:none; }
+  .table-wrap tbody tr:has(td.empty-row){ background:none; border:1px dashed var(--border); }
+}
+@media (max-width: 640px){
+  /* "Ordenar por": uma fila só, rolando de lado (não ocupa 3 linhas) */
+  .table-wrap thead tr{ flex-wrap:nowrap; overflow-x:auto; padding-bottom:12px; margin:0 -18px; padding-left:18px; padding-right:18px; scrollbar-width:none; }
+  .table-wrap thead tr::-webkit-scrollbar{ display:none; }
+  .table-wrap thead tr::before{ flex-shrink:0; }
+  .table-wrap thead th.th-sortable{ flex-shrink:0; white-space:nowrap; font-family:'IBM Plex Sans', system-ui, sans-serif; }
+  .table-wrap thead th .th-sort-seta{ margin-left:4px; }
+  /* Antes a 1ª coluna (e a de ações) ficava "grudada" (sticky) na lateral — regra
+     da tabela larga —, e ao deslizar as opções de "Ordenar por" o 1º chip
+     ficava parado por cima dos outros. No celular os chips rolam livres. */
+  .table-wrap table thead th.th-sortable:first-child,
+  .table-wrap table thead th.th-sortable{ position:static; left:auto; right:auto; z-index:auto; box-shadow:none; }
+  .table-wrap thead tr{ overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; }
+  .table-wrap tbody td:first-child{ box-shadow:none; border-right:none; }
+}
+@media (max-width: 640px){
+  .table-wrap table tbody td:first-child,
+  .table-wrap table tbody td.actions-col{ box-shadow:none; }
+  .table-wrap table tbody td:first-child{ padding-left:0; }
+}
+@media (max-width: 640px){
+  .table-wrap table tbody tr:hover td,
+  .table-wrap table tbody tr:hover td:first-child,
+  .table-wrap table tbody tr:hover td.actions-col,
+  .table-wrap table tbody tr.today-row td{ background:none; }
+  .table-wrap table tbody td.empty-row{
+    font-weight:400; font-size:14px; color:var(--text-dimmer); text-align:center;
+    margin:0; padding:18px 6px; border:none; background:none;
+  }
+}
+/* Alvos de toque: botões pequenos ficam com pelo menos ~38px em telas de toque */
+@media (hover: none) and (max-width: 880px){
+  .weekday-chip, .priority-chip, .permission-chip{ min-height:38px; padding-top:7px; padding-bottom:7px; }
+  .date-input-btn{ min-width:38px; min-height:38px; }
+  .password-toggle{ min-width:38px; min-height:38px; }
+}
+@media (max-width: 640px){
+  /* Barra do editor do Espelho: os botões quebram de linha em vez de vazar da tela */
+  .espelho-editor-acoes{ margin-left:0 !important; width:100%; flex-wrap:wrap; }
+  .espelho-editor-acoes > button{ flex:1 1 calc(50% - 4px) !important; justify-content:center; min-height:42px; }
+  .espelho-editor-acoes > .btn-primary{ flex-basis:100% !important; }
+}
+@media (max-width: 640px){
+  .table-wrap tbody td.mono, .table-wrap tbody td.mono-col{ font-size:13px; }
+  .table-wrap tbody td{ padding-left:40%; }
+  .table-wrap tbody td::before{ width:36%; }
+}
+
+/* Backup: botão "Escolher arquivo" no lugar do campo nativo (que vinha em inglês) */
+.backup-file-linha{ display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin-top:4px; }
+.backup-file-linha .btn-ghost{ display:inline-flex; align-items:center; gap:7px; }
+.backup-file-nome{ font-size:13.5px; color:var(--text-dimmer); overflow-wrap:anywhere; min-width:0; }
+
+/* Selos (Badge) — escuro por padrão, versão própria no tema claro */
+.badge{ padding:3px 10px; border-radius:20px; font-size:12.5px; font-weight:500; white-space:nowrap; display:inline-block; border:1px solid transparent; }
+.badge-green{ background:#173125; color:#5FD394; border-color:#25502F; }
+.badge-amber{ background:#33260F; color:#E8A93A; border-color:#5A4419; }
+.badge-red{ background:#341715; color:#F2685F; border-color:#5C2320; }
+.badge-blue{ background:#132A3E; color:#5FA8E8; border-color:#1E4463; }
+.badge-purple{ background:#2A1F3F; color:#B79BF0; border-color:#443465; }
+.badge-teal{ background:#0F2F31; color:#4FD1C5; border-color:#1C5256; }
+.badge-gray{ background:#22262E; color:#9096A1; border-color:#2E333D; }
+:root[data-theme="claro"] .badge-green{ background:#DDF3E5; color:#1E7A45; border-color:#9ED3B2; }
+:root[data-theme="claro"] .badge-amber{ background:#FBEFD3; color:#8A5A06; border-color:#E3C27E; }
+:root[data-theme="claro"] .badge-red{ background:#FBE0DD; color:#B3261E; border-color:#EBA9A3; }
+:root[data-theme="claro"] .badge-blue{ background:#DCEBFA; color:#1B5FA8; border-color:#9CC3EA; }
+:root[data-theme="claro"] .badge-purple{ background:#EBE4FA; color:#5B3DB0; border-color:#C4B3EA; }
+:root[data-theme="claro"] .badge-teal{ background:#D9F2EF; color:#0F6F68; border-color:#9ED8D2; }
+:root[data-theme="claro"] .badge-gray{ background:#ECEEF2; color:#555B66; border-color:#CDD1D9; }
+
+/* ---------- Aba Backup: painel de situação, resumo do arquivo, histórico ---------- */
+.backup-situacao{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
+.backup-situacao > div{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px 16px; min-width:0; }
+.backup-situacao small{ display:block; font-size:12px; color:var(--text-dim); margin-bottom:6px; }
+.backup-situacao b{ display:block; font-size:16px; line-height:1.3; }
+.backup-situacao span{ display:block; margin-top:4px; font-size:12px; color:var(--text-dim); overflow-wrap:anywhere; }
+.backup-situacao .ok, .backup-hist .ok{ color:var(--green); }
+.backup-situacao .warn, .backup-hist .warn{ color:var(--amber); }
+.backup-restore-resumo{ margin-top:12px; padding:12px; background:var(--panel-2); border:1px solid var(--border); border-radius:8px; font-size:13px; color:var(--text-dim); }
+.backup-restore-titulo{ margin-bottom:10px; }
+.backup-contagens{ display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; margin-bottom:12px; }
+.backup-contagem{ background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:8px 10px; }
+.backup-contagem b{ display:block; font-size:16px; color:var(--text); }
+.backup-contagem span{ font-size:12px; }
+.backup-hist{ overflow-x:auto; }
+.backup-hist table{ width:100%; border-collapse:collapse; font-size:13px; }
+.backup-hist th{ text-align:left; font-weight:500; font-size:12px; color:var(--text-dim); padding:6px 8px; border-bottom:1px solid var(--border); }
+.backup-hist td{ padding:8px; border-bottom:1px solid var(--border); color:var(--text); vertical-align:top; }
+@media (max-width:760px){ .backup-situacao{ grid-template-columns:1fr; } }
+.backup-hist td{ overflow-wrap:anywhere; white-space:normal; }
+@media (max-width:640px){
+  .backup-hist thead{ display:none; }
+  .backup-hist table, .backup-hist tbody, .backup-hist tr, .backup-hist td{ display:block; width:100%; min-width:0; }
+  .backup-hist tr{ padding:10px 0; border-bottom:1px solid var(--border); }
+  .backup-hist td{ border:0; padding:3px 0; }
+  .backup-hist td::before{ content:attr(data-label); display:block; font-size:11px; color:var(--text-dim); }
+}
+
+/* ---------- Configurações (Usuários, Backup, Histórico, Chat) ---------- */
+.config-secoes{ display:flex; gap:6px; margin-bottom:16px; overflow-x:auto; padding-bottom:2px; border-bottom:1px solid var(--border); }
+.config-secao{ display:inline-flex; align-items:center; gap:7px; padding:10px 14px; background:none; border:0; border-bottom:2px solid transparent; color:var(--text-dim); font:inherit; font-size:14px; cursor:pointer; white-space:nowrap; margin-bottom:-1px; }
+.config-secao:hover{ color:var(--text); }
+.config-secao.ativa{ color:var(--text); border-bottom-color:var(--red, #E4372B); font-weight:600; }
+.backup-presets{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.armaz-barra{ height:12px; background:var(--panel-2); border:1px solid var(--border); border-radius:20px; overflow:hidden; margin:6px 0 8px; }
+.armaz-barra-cheia{ height:100%; background:var(--green); border-radius:20px; }
+.armaz-barra-cheia.alerta{ background:var(--amber); }
+.armaz-legenda{ margin:0 0 14px !important; }
+@media (max-width:640px){
+  .config-secoes{ gap:0; justify-content:space-between; }
+  .config-secao{ padding:10px 8px; font-size:13px; gap:5px; }
+  .config-secao svg{ width:14px; height:14px; }
+}
+
+/* ---------- Relatório em pop-up (botão "Relatório" nas páginas) ---------- */
+.btn-relatorio{ display:inline-flex; align-items:center; gap:6px; }
+.relatorio-panel{ width:min(1000px, 96vw); max-width:1000px; max-height:90vh; padding:0; display:flex; flex-direction:column; overflow:hidden; }
+.relatorio-topo{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; border-bottom:1px solid var(--border); }
+.relatorio-topo h3{ margin:0; }
+.relatorio-corpo{ padding:16px 20px; overflow:auto; flex:1; min-height:0; }
+.relatorio-panel .report-controls{ padding:0; border:0; background:none; margin-bottom:14px; }
+.relatorio-panel .report-controls-actions{ display:none; }
+.relatorio-rodape{ margin:0; padding:12px 20px; border-top:1px solid var(--border); }
+.relatorio-panel .stat-grid{ margin-bottom:6px; }
+@media (max-width:640px){
+  .relatorio-panel{ max-height:94vh; }
+  .relatorio-topo, .relatorio-corpo, .relatorio-rodape{ padding-left:14px; padding-right:14px; }
+}
+@media print{
+  /* Com o pop-up de relatório aberto, imprime só a cópia limpa (fora do app) */
+  body:has(.report-print-root) #root{ display:none !important; }
+  .report-print-root{ display:block !important; padding:0; }
+}
+.relatorio-corpo .report-section-title{ margin:28px 0 12px; }
+.relatorio-panel .stat-grid{ margin-bottom:0; }
+
+/* ---------- Padrão de fontes de TODOS os PDFs (Relatórios e Espelho) ----------
+   Uma família só (IBM Plex Sans, a mesma do sistema), números em algarismos
+   de largura fixa (colunas alinhadas, sem precisar da fonte mono) e uma
+   escala única de tamanhos:
+     título do documento 18 · título de seção 13 · corpo/tabelas 11,5 ·
+     cabeçalho de tabela e rótulos 10 · marca/meta 10,5                      */
+@media print{
+  :root{ --pdf-font:'IBM Plex Sans', system-ui, sans-serif; --pdf-corpo:11.5px; --pdf-rotulo:10px; }
+  .report-print-root, .report-print-root *, .espelho-print, .espelho-print *{
+    font-family:var(--pdf-font) !important;
+    font-variant-numeric:tabular-nums;
+    line-height:1.4;
+  }
+  .report-print-root .stat-grid{ grid-template-columns:repeat(4, 1fr) !important; gap:8px; }
+  .report-print-brand{ font-size:10.5px !important; font-weight:700; letter-spacing:0.08em; }
+  .report-print-header h2{ font-size:18px !important; font-weight:700; margin:2px 0 6px; }
+  .report-print-header p{ font-size:var(--pdf-corpo) !important; }
+  .report-print-meta{ font-size:10.5px !important; }
+  .report-section-title{ font-size:13px !important; font-weight:700; }
+  .stat-label{ font-size:var(--pdf-rotulo) !important; }
+  .stat-value{ font-size:16px !important; font-weight:700 !important; }
+  .report-print-root .table-wrap table, .report-print-root .table-wrap tbody td{ font-size:var(--pdf-corpo) !important; font-weight:400; }
+  .report-print-root .table-wrap thead th{ font-size:var(--pdf-rotulo) !important; font-weight:700; }
+  .report-print-root .title-cell{ font-weight:600; }
+  .report-print-root .badge{ font-size:var(--pdf-rotulo) !important; font-weight:600; }
+  .espelho-print-table th, .espelho-print-table td{ font-size:var(--pdf-corpo) !important; }
+  .espelho-print-table thead tr:nth-child(2) th:first-child{ font-size:var(--pdf-rotulo) !important; }
+  .espelho-print-title-cell{ font-size:15px !important; font-weight:700; }
+  .espelho-print-total-cell{ font-size:var(--pdf-corpo) !important; font-weight:700; }
+}
+
+/* ---------- Segurança contra corte na impressão ---------- */
+@page{ size:A4 portrait; margin:12mm 10mm; }
+@media print{
+  html, body{ overflow:visible !important; height:auto !important; width:auto !important; min-width:0 !important; }
+  .report-print-root, .espelho-print{ width:100% !important; max-width:100% !important; box-sizing:border-box; overflow:visible !important; }
+  .report-print-root .table-wrap, .report-print-root table, .espelho-print table{ max-width:100% !important; }
+  .report-print-root .stat-card{ min-width:0; padding:10px 12px; }
+  .report-print-root .stat-value{ overflow-wrap:anywhere; }
+  .report-print-root td, .report-print-root th, .espelho-print td, .espelho-print th{ overflow-wrap:anywhere; word-break:normal; }
+  .espelho-print-table tr, .report-print-root tr{ break-inside:avoid; page-break-inside:avoid; }
+  .report-section-title{ break-after:avoid; page-break-after:avoid; }
+}
+
+/* OPEC — "Ver para o dia" (montar a grade de um dia futuro) */
+.opec-dia-ref{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim)}
+.opec-dia-ref input{min-width:140px;height:38px;padding:0 10px;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;color:inherit}
+.opec-dia-aviso{margin:0 0 14px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--panel);font-size:13.5px}
+.opec-dia-aviso-alerta{margin-top:8px;padding:10px 12px;border-radius:8px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4)}
+.opec-dia-aviso-alerta ul{margin:6px 0 0 18px;padding:0}
+.opec-dia-aviso-ok{margin-top:6px;color:var(--text-dim)}
+@media (max-width:640px){.opec-dia-ref{width:100%;flex-wrap:wrap}}
+
+/* Espelho → Adicionar entrevistados: destaque do entrevistado do dia */
+.espelho-modal-row-hoje{ background:rgba(228,55,43,.10); box-shadow:inset 3px 0 0 var(--red); }
+.espelho-modal-row-hoje:hover{ background:rgba(228,55,43,.16); }
+.espelho-modal-row-hoje .espelho-modal-row-duracao{ color:var(--text); }
+:root[data-theme="claro"] .espelho-modal-row-hoje{ background:rgba(194,42,31,.08); }
+.espelho-materia-pick-texto{ flex:1; display:flex; flex-direction:column; gap:2px; min-width:0; }
+.espelho-materia-pick-texto .espelho-materia-pick-meta{ white-space:normal; }
+
+/* Tema claro: peças que tinham fundo escuro fixo */
+:root[data-theme="claro"] .user-admin-tag{ background:#DCEBFA; color:#1B5FA8; border-color:#9CC3EA; }
+:root[data-theme="claro"] .texto-card-copiar{ background:#FBEFD3; color:#8A5A06; border-color:#E3C27E; }
+:root[data-theme="claro"] .texto-card-copiar:hover{ background:#F7E4B5; border-color:#D2AB5A; }
+
+/* Botões e campos herdam a fonte do sistema (o navegador usa Arial por padrão neles) */
+button, input, select, textarea{ font-family:inherit; }
+
+/* Celular: popup central ocupa quase a largura toda e o balão do chat ficava por
+   cima dos botões dele (ex.: "Baixar PDF"). Enquanto um popup está aberto, o
+   balão some; volta sozinho ao fechar. (No computador o popup é estreito e
+   centralizado — não chega ao canto do balão.) */
+@media (max-width:640px){
+  .app-shell:has(.confirm-overlay) ~ .chat-widget-dock{ opacity:0; pointer-events:none; }
+}
+
+/* ---------------------------------------------------------
+   Início (painel de abertura)
+--------------------------------------------------------- */
+.inicio-saudacao{ display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; margin-bottom:14px; }
+.inicio-saudacao-nome{ font-family:'Space Grotesk', sans-serif; font-size:18px; font-weight:600; }
+.inicio-saudacao-data{ color:var(--text-dim); font-size:13.5px; }
+.inicio-stats{ display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap:12px; margin-bottom:16px; }
+.inicio-grid{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:14px; align-items:stretch; }
+.inicio-painel.larga{ grid-column:1 / -1; }
+@media (max-width:900px){ .inicio-grid{ grid-template-columns:minmax(0,1fr); } }
+@media (max-width:520px){ .inicio-stats{ gap:8px; } .inicio-stats > :last-child:nth-child(odd){ grid-column:1 / -1; } }
+.inicio-painel{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px 16px; min-width:0; }
+.inicio-painel-topo{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:6px; }
+.inicio-painel-topo h3{ margin:0; font-family:'Space Grotesk', sans-serif; font-size:15px; font-weight:600; }
+.inicio-link{ background:none; border:none; padding:0; color:var(--blue); font-size:12.5px; cursor:pointer; white-space:nowrap; }
+.inicio-link:hover{ text-decoration:underline; }
+.inicio-linha{
+  display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+  background:none; border:none; border-top:1px solid var(--border); padding:9px 0; color:var(--text); cursor:pointer;
+}
+.inicio-painel-topo + .inicio-linha{ border-top:none; }
+.inicio-linha:hover .inicio-linha-titulo{ color:var(--blue); }
+.inicio-linha-texto{ display:flex; flex-direction:column; gap:1px; min-width:0; flex:1; }
+.inicio-linha-titulo{ font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.inicio-linha-sub{ font-size:12px; color:var(--text-dimmer); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.inicio-vazio{ margin:6px 0 2px; font-size:13px; color:var(--text-dimmer); }
+.inicio-mais{ background:none; border:none; padding:6px 0 0; color:var(--text-dimmer); font-size:12.5px; cursor:pointer; }
+.inicio-mais:hover{ color:var(--text); }
+
+/* Publicações nas redes sociais */
+.redes-botoes{ display:flex; flex-wrap:wrap; gap:8px; }
+.rede-btn{ display:inline-flex; align-items:center; gap:5px; padding:7px 13px; border-radius:999px; border:1px solid var(--border); background:var(--panel); color:var(--text-dim); font-size:13px; cursor:pointer; }
+.rede-btn:hover{ color:var(--text); border-color:var(--text-dimmer); }
+.rede-btn.on{ background:rgba(34,197,94,0.14); border-color:rgba(34,197,94,0.55); color:#4ade80; }
+.redes-datas{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.redes-data{ display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-dim); }
+.redes-data > span{ min-width:96px; }
+.redes-data .date-input-wrap, .redes-data input{ max-width:170px; }
+.redes-chips{ display:flex; flex-wrap:wrap; gap:4px; }
+.redes-icones{ display:inline-flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.rede-icone{ display:inline-flex; align-items:center; justify-content:center; }
+.rede-inicial{ display:inline-flex; align-items:center; justify-content:center; border-radius:50%; border:1.5px solid currentColor; font-weight:600; line-height:1; }
+.rede-btn .rede-icone{ opacity:.85; }
+.rede-chip{ padding:2px 8px; border-radius:999px; font-size:12px; background:rgba(34,197,94,0.14); color:#4ade80; border:1px solid rgba(34,197,94,0.35); white-space:nowrap; }
+.rede-chip small{ opacity:.75; font-size:11px; }
+:root[data-theme="claro"] .rede-btn.on, :root[data-theme="claro"] .rede-chip{ color:#15803d; background:rgba(34,197,94,0.14); }
+.redes-edit-lista{ display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 10px; }
+.redes-edit-lista .date-chip{ font-size:13px; }
+
+/* ---------------------------------------------------------
+   Início personalizável (cartões em grade)
+--------------------------------------------------------- */
+.ini-barra{ margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.ini-dica{ margin:0 0 10px; font-size:13px; color:var(--text-dim); }
+.ini-grid{ position:relative; }
+.ini-card{ position:relative; height:100%; display:flex; flex-direction:column; background:var(--panel); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-sizing:border-box; }
+.ini-card-conteudo{ flex:1; min-height:0; display:flex; flex-direction:column; }
+.ini-card.editando{ border:1.5px dashed var(--blue); }
+.ini-card.editando .ini-card-conteudo{ padding-top:30px; }
+.ini-edit-barra{ position:absolute; top:0; left:0; right:0; z-index:6; height:30px; display:flex; align-items:center; justify-content:space-between; padding:0 6px; background:color-mix(in srgb, var(--panel) 90%, transparent); border-bottom:1px solid var(--border); backdrop-filter:blur(3px); }
+.ini-alca{ display:inline-flex; align-items:center; flex:1; height:100%; cursor:grab; color:var(--text-dim); }
+.ini-alca:active{ cursor:grabbing; }
+.ini-edit-acoes, .ini-mover{ display:inline-flex; align-items:center; gap:4px; }
+.ini-btn{ display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:6px; border:1px solid var(--border); background:var(--panel); color:var(--text-dim); cursor:pointer; padding:0; }
+.ini-btn:hover:not(:disabled){ color:var(--text); border-color:var(--text-dimmer); }
+.ini-btn:disabled{ opacity:.35; cursor:default; }
+.ini-btn.perigo:hover{ color:var(--red); border-color:var(--red); }
+.ini-cor{ width:16px; height:16px; border-radius:50%; border:2px solid transparent; padding:0; cursor:pointer; }
+.ini-cor.ativa{ border-color:var(--text); }
+.ini-cab{ display:flex; align-items:center; gap:8px; justify-content:space-between; padding:14px 16px 6px; }
+.ini-cab h3{ margin:0; font-family:'Space Grotesk', sans-serif; font-size:15px; font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ini-lista{ display:flex; flex-direction:column; min-height:0; height:100%; }
+.ini-lista-corpo{ flex:1; min-height:0; overflow-y:auto; padding:0 16px 10px; }
+.ini-lista-corpo .inicio-linha:first-child{ border-top:none; }
+.ini-lista-corpo .inicio-vazio{ margin-top:8px; }
+
+/* números */
+.ini-numero{ height:100%; display:flex; align-items:center; gap:14px; padding:12px 18px; border-left:4px solid var(--acento); }
+.ini-numero-icone{ display:inline-flex; align-items:center; justify-content:center; width:42px; height:42px; border-radius:12px; color:var(--acento); background:color-mix(in srgb, var(--acento) 16%, transparent); flex:none; }
+.ini-numero-texto{ display:flex; flex-direction:column; min-width:0; }
+.ini-numero-valor{ font-family:'Space Grotesk', sans-serif; font-size:32px; font-weight:600; line-height:1.05; }
+.ini-numero-rotulo{ font-size:12.5px; color:var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ini-card.numero .ini-card-conteudo{ justify-content:center; }
+
+/* post-it */
+.ini-card.tipo-postit{ background:transparent; border:none; overflow:visible; }
+.ini-card.tipo-postit.editando{ border:1.5px dashed var(--blue); overflow:hidden; }
+.ini-postit{ flex:1; border-radius:12px; padding:14px 16px; color:#2b2b2b; box-shadow:0 4px 12px rgba(0,0,0,.28); display:flex; min-height:0; }
+.ini-postit.cor-amarelo, .ini-cor.cor-amarelo{ background:#FFF1A0; }
+.ini-postit.cor-rosa, .ini-cor.cor-rosa{ background:#FFC6DC; }
+.ini-postit.cor-verde, .ini-cor.cor-verde{ background:#C6EFBC; }
+.ini-postit.cor-azul, .ini-cor.cor-azul{ background:#BFE0FF; }
+.ini-postit.cor-roxo, .ini-cor.cor-roxo{ background:#DBCFFF; }
+.ini-postit.cor-laranja, .ini-cor.cor-laranja{ background:#FFD7AA; }
+.ini-postit-texto{ flex:1; width:100%; min-height:0; border:none; outline:none; background:transparent; resize:none; color:inherit; font-size:15px; line-height:1.45; font-family:inherit; padding:0; }
+.ini-postit-texto.lido{ white-space:pre-wrap; overflow:auto; word-break:break-word; }
+.ini-postit-texto::placeholder{ color:rgba(0,0,0,.45); }
+.ini-postit-vazio{ opacity:.5; }
+.ini-card.tipo-postit.editando .ini-postit{ border-radius:0; box-shadow:none; padding-top:34px; }
+.ini-card.tipo-postit.editando .ini-card-conteudo{ padding-top:0; }
+
+/* links */
+.ini-links{ display:flex; flex-direction:column; min-height:0; height:100%; }
+.ini-links-lista{ flex:1; min-height:0; overflow-y:auto; padding:2px 12px 12px; display:flex; flex-direction:column; gap:6px; }
+.ini-link{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 12px; border-radius:9px; background:var(--panel-2, rgba(127,127,127,.1)); border:1px solid var(--border); color:var(--text); text-decoration:none; font-size:13.5px; }
+.ini-link:hover{ border-color:var(--blue); color:var(--blue); }
+.ini-link-nome{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* foto e vídeo */
+.ini-midia{ margin:0; position:relative; flex:1; min-height:0; display:flex; background:#000; }
+.ini-midia img{ width:100%; height:100%; display:block; }
+.ini-midia img.cobrir{ object-fit:cover; }
+.ini-midia img.conter{ object-fit:contain; }
+.ini-midia iframe, .ini-midia video{ width:100%; height:100%; border:none; display:block; }
+.ini-midia.sem-toque iframe, .ini-midia.sem-toque video{ pointer-events:none; }
+.ini-card.editando .ini-midia img{ pointer-events:none; }
+.ini-midia figcaption{ position:absolute; left:0; right:0; bottom:0; padding:18px 12px 8px; font-size:13px; color:#fff; background:linear-gradient(transparent, rgba(0,0,0,.72)); pointer-events:none; }
+.ini-midia .ini-link{ margin:auto; }
+.ini-midia-vazia{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:var(--text-dimmer); font-size:13px; text-align:center; padding:12px; }
+
+/* celular: pilha */
+.ini-pilha{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; }
+.ini-pilha > div{ min-width:0; }
+.ini-pilha .ini-pilha-larga{ grid-column:1 / -1; }
+.ini-pilha .ini-card{ height:auto; min-height:76px; }
+.ini-pilha .ini-lista-corpo{ max-height:340px; }
+.ini-pilha .ini-midia{ aspect-ratio:16 / 9; flex:none; }
+.ini-pilha .ini-postit{ min-height:150px; }
+.ini-pilha .ini-links-lista{ max-height:320px; }
+.ini-pilha .ini-numero{ padding:10px 12px; gap:10px; }
+.ini-pilha .ini-numero-icone{ width:34px; height:34px; }
+.ini-pilha .ini-numero-valor{ font-size:26px; }
+.ini-pilha .ini-numero-rotulo{ white-space:normal; }
+
+/* arrastar/redimensionar */
+.react-grid-item.react-grid-placeholder{ background:var(--blue); opacity:.16; border-radius:14px; }
+.react-grid-item.react-draggable-dragging, .react-grid-item.resizing{ z-index:20; opacity:.92; }
+
+/* janelas do Início */
+.ini-editor{ max-width:520px; width:calc(100vw - 32px); max-height:calc(100vh - 40px); overflow-y:auto; }
+.ini-editor-links{ display:flex; flex-direction:column; gap:8px; margin:8px 0; }
+.ini-editor-link{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) auto; gap:6px; align-items:center; }
+.ini-abas{ display:flex; gap:6px; margin-bottom:10px; }
+.ini-abas button{ flex:1; padding:8px; border-radius:9px; border:1px solid var(--border); background:var(--panel); color:var(--text-dim); cursor:pointer; font-size:13.5px; }
+.ini-abas button.ativa{ border-color:var(--blue); color:var(--text); background:color-mix(in srgb, var(--blue) 14%, var(--panel)); }
+.ini-envio{ margin-bottom:10px; }
+.ini-tipos{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
+.ini-tipo{ display:flex; flex-direction:column; align-items:flex-start; gap:2px; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--panel); color:var(--text); cursor:pointer; text-align:left; }
+.ini-tipo:hover{ border-color:var(--blue); }
+.ini-tipo svg{ color:var(--blue); margin-bottom:4px; }
+.ini-tipo span{ font-size:12.5px; color:var(--text-dim); }
+.ini-sistema-lista{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+@media (max-width:520px){ .ini-editor-link{ grid-template-columns:minmax(0,1fr) auto; } .ini-editor-link input:nth-child(2){ grid-column:1 / 2; } }
+
+
+/* ---------------------------------------------------------
+   Início: o conteúdo de cada cartão se ajusta ao tamanho dele
+   (container queries; na grade o cartão é "container" de largura e altura).
+--------------------------------------------------------- */
+.ini-grid .ini-card{ container-type:size; container-name:ini; }
+.ini-pilha .ini-card{ container-type:inline-size; container-name:ini; }
+
+/* números: quadrado = ícone em cima, número grande, nome embaixo; largo = em linha */
+.ini-grid .ini-numero-valor{ font-size:clamp(20px, 22cqmin, 64px); }
+.ini-grid .ini-numero-icone{ width:clamp(26px, 20cqmin, 52px); height:clamp(26px, 20cqmin, 52px); }
+@container ini (max-aspect-ratio: 5/4){
+  .ini-numero{ flex-direction:column; justify-content:center; text-align:center; gap:6px; border-left:none; border-top:4px solid var(--acento); }
+  .ini-numero-texto{ align-items:center; }
+  .ini-numero-rotulo{ white-space:normal; }
+}
+@container ini (max-height: 70px){ .ini-numero-icone{ display:none; } .ini-numero{ padding:6px 12px; } }
+@container ini (max-width: 130px){ .ini-numero-icone{ display:none; } .ini-numero-rotulo{ font-size:11px; } }
+
+/* listas: cabeçalho e linhas mais enxutos quando o cartão é pequeno */
+@container ini (max-width: 320px){
+  .ini-lista .inicio-link{ font-size:0; }
+  .ini-lista .inicio-link::after{ content:"\2192"; font-size:15px; }
+  .ini-lista .inicio-linha .badge{ display:none; }
+  .ini-cab{ padding:10px 12px 4px; }
+  .ini-lista-corpo{ padding:0 12px 8px; }
+}
+@container ini (max-height: 230px){
+  .ini-lista .inicio-linha-sub{ display:none; }
+  .ini-lista .inicio-linha{ padding:6px 0; }
+}
+@container ini (max-height: 130px){ .ini-lista .ini-cab{ padding-top:8px; } .ini-lista .inicio-linha{ padding:4px 0; } .ini-lista .inicio-linha-titulo{ font-size:12.5px; } }
+
+/* post-it: o texto cresce e diminui com o cartão */
+.ini-grid .ini-postit-texto{ font-size:clamp(12px, 7cqmin, 28px); }
+.ini-grid .ini-postit{ padding:clamp(8px, 5cqmin, 18px); }
+
+/* links */
+@container ini (max-width: 220px){ .ini-link svg{ display:none; } .ini-links-lista{ padding:2px 8px 8px; } .ini-cab{ padding:10px 10px 4px; } }
+@container ini (max-height: 150px){ .ini-link{ padding:5px 10px; font-size:12.5px; } .ini-links .ini-cab{ padding-top:8px; } }
+
+/* barra de edição: some o que não cabe */
+@container ini (max-width: 200px){ .ini-edit-barra .ini-cor{ display:none; } }
+@container ini (max-width: 110px){ .ini-edit-barra .ini-alca svg{ display:none; } }
+
+/* Espelho: ainda não abri */
+.espelho-linha.nao-visto{ box-shadow:inset 3px 0 0 var(--green, #22c55e); }
+.espelho-linha.nao-visto .espelho-data-dia, .espelho-linha.nao-visto .espelho-titulo-cell{ font-weight:700; }
+.espelho-novo{ margin-right:8px; font-size:11px; padding:1px 8px; vertical-align:middle; }
+
+/* Alças nos quatro lados e quatro cantos */
+
+/* Configurações > Geral: caixa de texto das redes sociais e espaço do Início */
+.backup-section .date-add-row input, .backup-section .backup-config-row .field input{
+  background:var(--panel-2); border:1px solid var(--border); border-radius:7px; padding:9px 11px;
+  color:var(--text); font-family:inherit; font-size:13.5px; transition:border-color .12s ease, box-shadow .12s ease;
+}
+.backup-section .date-add-row input{ flex:1 1 220px; min-width:0; }
+.backup-section .date-add-row input::placeholder{ color:var(--text-dimmer); }
+.backup-section .date-add-row input:hover{ border-color:var(--text-dimmer); }
+.backup-section .date-add-row input:focus{ outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(76,139,232,0.15); }
+.redes-add-row{ align-items:center; }
+.redes-edit-lista .date-chip{ font-family:inherit; padding:5px 9px 5px 12px; }
+.inicio-espaco-lista{ display:flex; flex-direction:column; gap:6px; margin:8px 0 14px; max-width:520px; }
+.inicio-espaco-linha{ display:grid; grid-template-columns:minmax(80px,140px) 1fr 76px; gap:10px; align-items:center; font-size:13px; }
+.inicio-espaco-linha .armaz-barra{ margin:0; }
+.inicio-espaco-nome{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text); }
+.inicio-espaco-uso{ text-align:right; color:var(--text-dim); font-variant-numeric:tabular-nums; }
+
+/* Relatório de OPEC: seletor Resumo / Dia a dia e linha de total */
+.rel-seg{ display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; background:var(--panel-2); }
+.rel-seg button{ border:0; background:none; color:var(--text-dim); font:inherit; font-size:13.5px; padding:9px 16px; cursor:pointer; }
+.rel-seg button:hover{ color:var(--text); }
+.rel-seg button.on{ background:var(--red, #E4372B); color:#fff; font-weight:600; }
+.report-total-row td{ background:var(--panel-2); border-top:1.5px solid var(--text-dimmer); }
+@media print{ .report-total-row td{ background:#eceef2 !important; border-top:1.5px solid #333; } }
+.report-dia th:last-child, .report-dia td:last-child{ text-align:right; }
+
+/* ---- Alças de redimensionar: maiores e bem visíveis (só no modo Personalizar) ---- */
+
+/* ---- Post-it editável direto + cores ao passar o mouse ---- */
+.ini-postit{ position:relative; }
+.ini-postit-texto{ cursor:text; }
+.ini-postit-cores{ position:absolute; right:8px; top:8px; display:flex; gap:5px; padding:4px 6px; border-radius:999px; background:rgba(255,255,255,.7); box-shadow:0 1px 4px rgba(0,0,0,.2); opacity:0; pointer-events:none; transition:opacity .15s; }
+.ini-postit:hover .ini-postit-cores, .ini-postit:focus-within .ini-postit-cores{ opacity:1; pointer-events:auto; }
+.ini-postit-cores .ini-cor{ width:16px; height:16px; border-radius:50%; border:1px solid rgba(0,0,0,.25); cursor:pointer; padding:0; }
+.ini-postit-cores .ini-cor.ativa{ outline:2px solid #333; outline-offset:1px; }
+@media (hover:none){ .ini-postit-cores{ opacity:1; pointer-events:auto; } }
+@container ini (max-width:150px){ .ini-postit-cores{ display:none; } }
+.ini-nota-estado{ font-size:12.5px; color:var(--text-dim); align-self:center; margin-right:4px; }
+.ini-nota-estado.erro{ color:var(--red); }
+
+/* ---- Cartão Tempo ---- */
+.ini-tempo{ flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center; gap:8px; padding:12px 14px; background:linear-gradient(160deg, color-mix(in srgb, var(--blue) 16%, var(--panel)), var(--panel)); color:var(--text); }
+.ini-tempo-cidade{ display:flex; align-items:center; gap:5px; font-size:13px; color:var(--text-dim); min-width:0; }
+.ini-tempo-cidade span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ini-tempo-agora{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.ini-tempo-icone{ color:var(--blue); display:inline-flex; }
+.ini-tempo-temp{ font-size:38px; font-weight:700; line-height:1; }
+.ini-tempo-desc{ font-size:13.5px; color:var(--text-dim); }
+.ini-tempo-detalhes{ display:flex; gap:12px; flex-wrap:wrap; font-size:12.5px; color:var(--text-dim); }
+.ini-tempo-detalhes span{ display:inline-flex; align-items:center; gap:4px; }
+.ini-tempo-prev{ display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:6px; margin-top:2px; }
+.ini-tempo-dia{ display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 2px; border-radius:8px; background:color-mix(in srgb, var(--text) 6%, transparent); font-size:12px; color:var(--text-dim); }
+.ini-tempo-dia-temp b{ color:var(--text); font-weight:600; }
+.ini-tempo-dia-temp small{ font-size:11.5px; }
+@container ini (max-height:260px){ .ini-tempo-prev{ display:none; } }
+@container ini (max-height:190px){ .ini-tempo-detalhes{ display:none; } }
+@container ini (max-height:130px){ .ini-tempo-cidade{ display:none; } .ini-tempo-desc{ display:none; } .ini-tempo-temp{ font-size:30px; } }
+@container ini (max-width:200px){ .ini-tempo-desc{ display:none; } .ini-tempo-temp{ font-size:30px; } .ini-tempo-icone svg{ width:30px; height:30px; } }
+@container ini (min-width:420px) and (min-height:200px){ .ini-tempo-temp{ font-size:52px; } }
+.ini-pilha .ini-tempo{ min-height:200px; }
+.ini-cidades{ display:flex; flex-direction:column; gap:6px; margin:4px 0 8px; }
+.ini-cidade{ text-align:left; padding:9px 12px; border-radius:8px; border:1px solid var(--border); background:var(--panel-2); color:var(--text); font:inherit; font-size:13.5px; cursor:pointer; }
+.ini-cidade:hover{ border-color:var(--text-dimmer); }
+.ini-cidade.ativa{ border-color:var(--blue); box-shadow:0 0 0 3px rgba(76,139,232,.15); }
+
+/* ---- Cartão Site (navegador pequeno) ---- */
+.ini-site{ flex:1; min-height:0; display:flex; flex-direction:column; }
+.ini-site-barra{ display:flex; align-items:center; gap:8px; padding:6px 10px; border-bottom:1px solid var(--border); background:var(--panel-2); color:var(--text-dim); font-size:12.5px; flex:none; }
+.ini-site-nome{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ini-site-abrir{ display:inline-flex; align-items:center; gap:4px; color:var(--blue); text-decoration:none; padding:3px 8px; border-radius:6px; border:1px solid var(--border); flex:none; }
+.ini-site-abrir:hover{ border-color:var(--blue); }
+.ini-site-quadro{ flex:1; min-height:0; background:#fff; position:relative; }
+.ini-site-quadro iframe{ width:100%; height:100%; border:0; display:block; background:#fff; }
+.ini-site-quadro.sem-toque iframe{ pointer-events:none; }
+.ini-pilha .ini-site{ min-height:320px; }
+@container ini (max-width:220px){ .ini-site-abrir span{ display:none; } }
+@container ini (max-height:90px){ .ini-site-quadro{ display:none; } }
+
+/* ---- Alças de redimensionar (grade do Início, só no modo Personalizar) ----
+   O CSS da biblioteca usa seletores fortes (.react-resizable-handle.react-resizable-handle-e),
+   por isso os daqui repetem a classe do tipo para ganhar dele. */
+.ini-grid .react-grid-item > .react-resizable-handle{ position:absolute; z-index:8; background:none; padding:0; margin:0; transform:none; box-sizing:border-box; }
+.ini-grid .react-grid-item > .react-resizable-handle::after{ content:""; position:absolute; box-sizing:border-box; background:none; border:0; width:auto; height:auto; right:auto; bottom:auto; left:auto; top:auto; opacity:1; }
+.ini-grid .react-grid-item > .react-resizable-handle:hover::after{ filter:brightness(1.3); }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-e{ transform:none; margin-top:0; top:36px; bottom:32px; right:-7px; left:auto; width:22px; height:auto; cursor:ew-resize; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-w{ transform:none; margin-top:0; top:36px; bottom:32px; left:-7px; right:auto; width:22px; height:auto; cursor:ew-resize; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-s{ transform:none; left:32px; right:32px; bottom:-7px; top:auto; height:22px; width:auto; cursor:ns-resize; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-n{ transform:none; top:-7px; left:50%; margin-left:-48px; width:96px; height:22px; right:auto; cursor:ns-resize; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-e::after{ right:7px; top:50%; width:7px; height:56px; max-height:80%; margin-top:-28px; border-radius:4px; background:var(--blue); box-shadow:0 0 0 2px var(--panel); }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-w::after{ left:7px; top:50%; width:7px; height:56px; max-height:80%; margin-top:-28px; border-radius:4px; background:var(--blue); box-shadow:0 0 0 2px var(--panel); }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-s::after{ bottom:7px; left:50%; height:7px; width:56px; max-width:80%; margin-left:-28px; border-radius:4px; background:var(--blue); box-shadow:0 0 0 2px var(--panel); }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-n::after{ top:7px; left:50%; height:7px; width:56px; margin-left:-28px; border-radius:4px; background:var(--blue); box-shadow:0 0 0 2px var(--panel); }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-se{ transform:none; right:-5px; bottom:-5px; width:32px; height:32px; top:auto; left:auto; cursor:se-resize; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-sw{ transform:none; left:-5px; bottom:-5px; width:32px; height:32px; top:auto; right:auto; cursor:sw-resize; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-ne{ transform:none; right:-5px; top:-5px; width:32px; height:32px; bottom:auto; left:auto; cursor:ne-resize; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-nw{ transform:none; left:-5px; top:-5px; width:32px; height:32px; bottom:auto; right:auto; cursor:nw-resize; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-se::after{ right:9px; bottom:9px; width:16px; height:16px; border:0 solid var(--blue); border-right-width:4px; border-bottom-width:4px; border-radius:0 0 5px 0; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-sw::after{ left:9px; bottom:9px; width:16px; height:16px; border:0 solid var(--blue); border-left-width:4px; border-bottom-width:4px; border-radius:0 0 0 5px; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-ne::after{ right:9px; top:9px; width:16px; height:16px; border:0 solid var(--blue); border-right-width:4px; border-top-width:4px; border-radius:0 5px 0 0; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-nw::after{ left:9px; top:9px; width:16px; height:16px; border:0 solid var(--blue); border-left-width:4px; border-top-width:4px; border-radius:5px 0 0 0; }
+.ini-grid .react-grid-item{ overflow:visible; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-n{ top:-10px; height:18px; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-n::after{ top:6px; }
+.ini-edit-barra{ align-items:center; }
+
+/* ---- Barra de mover e botões (modelo aprovado): botões recuados, cantos de esticar do lado de fora ---- */
+.ini-grid .ini-edit-barra{ padding:0 28px; }
+.ini-grid .ini-edit-barra .ini-edit-acoes{ gap:6px; }
+.ini-alca{ gap:6px; font-size:12.5px; }
+.ini-alca-txt{ color:var(--text-dim); }
+.ini-grid .ini-edit-barra{ cursor:grab; }
+.ini-grid .ini-edit-barra:active{ cursor:grabbing; }
+.ini-grid .ini-edit-barra .ini-btn, .ini-grid .ini-edit-barra .ini-cor{ cursor:pointer; }
+@container ini (max-width:170px){ .ini-grid .ini-edit-barra{ padding:0 18px; } .ini-alca-txt{ display:none; } }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-se, .ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-sw, .ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-ne, .ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-nw{ width:28px; height:28px; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-se{ right:-8px; bottom:-8px; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-sw{ left:-8px; bottom:-8px; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-ne{ right:-8px; top:-8px; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-nw{ left:-8px; top:-8px; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-se::after{ right:0; bottom:0; width:20px; height:20px; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-sw::after{ left:0; bottom:0; width:20px; height:20px; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-ne::after{ right:0; top:0; width:20px; height:20px; }
+.ini-grid .react-grid-item > .react-resizable-handle.react-resizable-handle-nw::after{ left:0; top:0; width:20px; height:20px; }
+
+.conta-sub{ display:block; font-size:11.5px; font-weight:400; color:var(--text-dim); margin-top:1px; }
+
+/* Espelho: tempo total sempre visível enquanto monta (antes só saía no PDF) */
+.espelho-tempo-pill{ margin-left:auto; display:inline-flex; align-items:center; gap:7px; padding:7px 13px; border-radius:999px; border:1px solid var(--border); background:var(--panel-2); color:var(--text-dim); font-size:13px; white-space:nowrap; }
+.espelho-tempo-pill strong{ color:var(--text); font-size:15px; font-variant-numeric:tabular-nums; font-family:'IBM Plex Mono', monospace; }
+.espelho-itens-tempos{ margin-left:12px; font-size:12.5px; font-weight:400; color:var(--text-dim); }
+.espelho-itens-tempos strong{ color:var(--text); font-variant-numeric:tabular-nums; }
+@media (max-width:640px){ .espelho-tempo-rotulo{ display:none; } .espelho-itens-tempos{ display:block; margin:4px 0 0; } }
+
+/* Espelho: aviso de alteração */
+.espelho-linha .espelho-alteracao{ display:block; margin-top:2px; font-size:12px; color:var(--text-muted, #9aa3b2); font-weight:400; }
+.espelho-aviso-alteracao{ display:flex; align-items:center; gap:8px; margin:8px 0; padding:8px 12px; border-radius:8px; background:#33260F; color:#E8A93A; border:1px solid #5A4419; font-size:13px; }
+.espelho-aviso-alteracao span{ flex:1; }
+:root[data-theme="claro"] .espelho-aviso-alteracao{ background:#FBEFD3; color:#8A5A06; border-color:#E3C27E; }
+
+/* Espelho: trocar item */
+.espelho-troca-wrap{ position:relative; display:inline-flex; }
+.espelho-troca-menu{ position:absolute; right:0; top:100%; z-index:30; min-width:150px; display:flex; flex-direction:column; padding:6px; border-radius:10px; background:var(--surface-2, #1b2230); border:1px solid var(--border, #2d3648); box-shadow:0 8px 24px rgba(0,0,0,.35); }
+.espelho-troca-menu button{ text-align:left; padding:7px 10px; border-radius:6px; background:none; border:0; color:inherit; cursor:pointer; font:inherit; }
+.espelho-troca-menu button:hover{ background:rgba(127,127,127,.18); }
+.espelho-troca-titulo{ padding:4px 10px; font-size:11px; opacity:.6; text-transform:uppercase; letter-spacing:.04em; }

@@ -1,0 +1,20 @@
+services:
+  controle-tv:
+    build: .
+    container_name: controle-tv
+    ports:
+      - "3001:3001"
+    volumes:
+      - controle-tv-data:/data
+    environment:
+      - PORT=3001
+      - DB_PATH=/data/data.db
+      # Ative se o acesso for por HTTPS (proxy/load balancer com SSL na frente, Cloudflare, Caddy, Nginx etc.)
+      - COOKIE_SECURE=true
+      # Atrás de proxy (Nginx, Cloudflare...)? Descomente: quantos proxies ficam na frente. Usado pelo bloqueio de senhas erradas.
+      # - TRUST_PROXY=1
+      # Fuso horário: escolhido em Configurações → Geral (opcional: TZ=... define só o valor inicial)
+    restart: unless-stopped
+
+volumes:
+  controle-tv-data:
